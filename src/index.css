@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 210 15% 12%;
+        
+        --primary: 180 85% 45%;
+        --primary-foreground: 0 0% 100%;
+        --primary-light: 180 80% 60%;
+        --primary-dark: 180 90% 30%;
+        
+        --secondary: 200 100% 50%;
+        --secondary-foreground: 0 0% 100%;
+        --secondary-light: 200 95% 65%;
+        
+        --accent: 45 100% 55%;
+        --accent-foreground: 0 0% 100%;
+        --accent-light: 45 100% 70%;
+        
+        --success: 145 70% 48%;
+        --success-foreground: 0 0% 100%;
+        
+        --red-accent: 0 85% 55%;
+        --green-accent: 145 75% 42%;
+        
+        --muted: 200 20% 96%;
+        --muted-foreground: 210 12% 42%;
+        
+        --card: 0 0% 100%;
+        --card-foreground: 210 15% 12%;
+        
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 15% 12%;
+        
+        --border: 200 20% 90%;
+        --input: 200 20% 90%;
+        --ring: 180 85% 45%;
+        
+        --destructive: 0 85% 55%;
+        --destructive-foreground: 0 0% 98%;
+        
+        --gradient-primary: linear-gradient(135deg, hsl(180 85% 45%), hsl(200 100% 50%));
+        --gradient-hero: linear-gradient(135deg, hsl(180 90% 30%), hsl(200 100% 50%), hsl(180 80% 60%));
+        --gradient-accent: linear-gradient(90deg, hsl(180 85% 45%), hsl(145 75% 42%));
+        --gradient-vibrant: linear-gradient(135deg, hsl(180 85% 45%), hsl(145 75% 42%), hsl(45 100% 55%));
+        --gradient-light: linear-gradient(180deg, hsl(0 0% 100%), hsl(200 20% 98%));
+        --gradient-warm: linear-gradient(90deg, hsl(45 100% 55%), hsl(35 95% 60%));
+        
+        --shadow-sm: 0 2px 8px hsl(180 85% 45% / 0.12);
+        --shadow-md: 0 4px 16px hsl(180 85% 45% / 0.16);
+        --shadow-lg: 0 8px 32px hsl(180 85% 45% / 0.2);
+        --shadow-glow: 0 0 40px hsl(180 85% 45% / 0.3);
+        --shadow-colorful: 0 8px 32px hsl(180 85% 45% / 0.2), 0 0 20px hsl(45 100% 55% / 0.15);
+        
+        --glass-bg: hsl(0 0% 100% / 0.8);
+        --glass-border: hsl(180 85% 45% / 0.2);
+        
+        --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-smooth: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        --radius: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+    }
+
+    .dark {
+        --background: 210 15% 8%;
+        --foreground: 0 0% 95%;
+        
+        --primary: 180 65% 50%;
+        --primary-foreground: 210 15% 8%;
+        
+        --secondary: 200 85% 55%;
+        --secondary-foreground: 210 15% 8%;
+        
+        --muted: 210 15% 15%;
+        --muted-foreground: 210 8% 65%;
+        
+        --card: 210 15% 12%;
+        --card-foreground: 0 0% 95%;
+        
+        --border: 210 15% 20%;
+        --input: 210 15% 20%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+        direction: rtl;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Cairo', 'Tajawal', -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Tajawal', 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply backdrop-blur-xl bg-white/70 border border-white/20;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .glass-card-dark {
+        @apply backdrop-blur-xl bg-primary/10 border border-primary/20;
+    }
+    
+    .text-cyan-500 {
+        @apply bg-gradient-to-r from-primary via-secondary to-primary-light bg-clip-text text-transparent;
+    }
+    
+    .section-padding {
+        @apply py-16 md:py-24 lg:py-32;
+    }
+    
+    .container-custom {
+        @apply container mx-auto px-4 sm:px-6 lg:px-8;
+    }
+}
+
+@layer utilities {
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+    
+    .animate-slide-up {
+        animation: slideUp 0.8s ease-out forwards;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
