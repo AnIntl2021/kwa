@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تواصل معنا</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:"Segoe UI",Tahoma,sans-serif;
+}
+
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background:#202435;
+}
+
+/* Background image at 10% opacity */
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/xapw5hpf_%D8%A7%D8%A8%D8%B1%D8%A7%D8%AC%20%D8%A7%D9%84%D9%83%D9%88%D9%8A%D8%AA.png")
+    center/cover no-repeat;
+  opacity:0.10;
+  z-index:0;
+}
+
+/* Floating white glass shapes */
+.shape{
+  position:absolute;
+  width:120px;
+  height:120px;
+  border-radius:20px;
+  background:rgba(255, 245, 245, 0.12);
+  backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,.35);
+  animation:float 14s infinite ease-in-out;
+  z-index:1;
+}
+
+.shape.s1{top:12%;left:16%;}
+.shape.s2{top:20%;right:10%;width:90px;height:90px;animation-duration:11s;}
+.shape.s3{bottom:14%;left:10%;width:100px;height:100px;animation-duration:16s;}
+.shape.s4{bottom:10%;right:14%;width:150px;height:150px;animation-duration:18s;}
+
+@keyframes float{
+  0%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-30px) rotate(6deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+
+/* Main white glass card */
+.card{
+  position:relative;
+  width:420px;
+  padding:36px;
+  border-radius:28px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(26px);
+  border:1px solid rgba(255,255,255,.45);
+  box-shadow:
+    0 40px 90px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.35);
+  animation:fadeUp 1.2s ease;
+  z-index:2;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(35px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  color:#ffffff;
+  font-size:28px;
+  font-weight:700;
+}
+
+p{
+  margin:12px 0 28px;
+  text-align:center;
+  font-size:13px;
+  color:#e5e7eb;
+  opacity:.85;
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  font-size:13px;
+  color:#f8fafc;
+}
+
+input,textarea{
+  width:100%;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.14);
+  color:#ffffff;
+  margin-bottom:18px;
+  transition:.35s;
+}
+
+input:focus,textarea:focus{
+  outline:none;
+  border-color:rgba(255,255,255,.8);
+  background:rgba(255,255,255,.22);
+  box-shadow:0 0 0 2px rgba(255,255,255,.25);
+}
+
+textarea{
+  min-height:115px;
+  resize:none;
+}
+
+button{
+  width:100%;
+  margin-top:8px;
+  padding:16px;
+  border:none;
+  border-radius:20px;
+  background:rgba(255,255,255,.9);
+  color:#020617;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 20px 45px rgba(44, 43, 43, 0.35);
+  transition:.35s;
+}
+
+button:hover{
+  transform:translateY(-3px) scale(1.02);
+  background:#ffffff;
+}
+
+@media(max-width:480px){
+  .card{width:92%;padding:28px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shape s1"></div>
+<div class="shape s2"></div>
+<div class="shape s3"></div>
+<div class="shape s4"></div>
+
+<div class="card">
+  <h1>تواصل معنا</h1>
+  <p>يرجى تعبئة النموذج أدناه وسنقوم بالرد عليك في أقرب وقت ممكن</p>
+
+  <label>الاسم الأول</label>
+  <input type="text">
+
+  <label>الاسم الأوسط</label>
+  <input type="text">
+
+  <label>اسم العائلة</label>
+  <input type="text">
+
+  <label>البريد الإلكتروني</label>
+  <input type="email">
+
+  <label>رقم الهاتف</label>
+  <input type="tel">
+
+  <label>الرسالة</label>
+  <textarea></textarea>
+
+  <button>إرسال الرسالة</button>
+</div>
+
+</body>
+</html>

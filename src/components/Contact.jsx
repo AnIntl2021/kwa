@@ -47,8 +47,8 @@ export const Contact = () => {
     {
       icon: Phone,
       title: "الهاتف",
-      value: "9988 1724",
-      link: "tel:+96522450902"
+      value: "99881724",
+      link: "tel:+96599881724"
     },
     {
       icon: MapPin,
