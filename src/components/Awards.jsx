@@ -25,8 +25,8 @@ export const Awards = () => {
       color: "text-primary"
     },
     {
-      icon:  '/c3.png',
-      title: "جائزة شركة نفط الكويت الوطنية",
+      icon:  '/knpc.png',
+      title: "شركة البترول الوطنية الكويتية",
       description: "أفضل مشروع مستدام - تقدير للابتكار في مشاريع الاستدامة المائية",
       year: "2018",
       color: "text-secondary"

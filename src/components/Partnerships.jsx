@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent } from './ui/card';
 import { Building, Globe2, Briefcase, Heart } from 'lucide-react';
-
+import { Send, MessageCircle } from 'lucide-react';
 export const Partnerships = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -83,7 +83,7 @@ export const Partnerships = () => {
     }
   };
 
-  return (
+  return (<>
     <section id="partnerships" className="section-padding relative overflow-hidden bg-blue-50">
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-secondary/10 to-transparent rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-br from-accent/10 to-transparent rounded-full blur-3xl"></div>
@@ -170,5 +170,63 @@ export const Partnerships = () => {
         </motion.div>
       </div>
     </section>
+    {/* --- News Subscription Section --- */}
+<section className="w-full bg-white py-12 border-t border-b border-gray-100">
+  
+  <div className="container-custom">
+    <div className="max-full mx-auto">
+      
+      <div className="flex flex-col md:flex-row items-center gap-8 bg-slate-50 p-6 md:p-10 rounded-3xl border border-blue-100/50">
+        
+        {/* Text Section */}
+        
+<div className="text-right flex-shrink-0">
+          <h3 className="text-2xl font-bold text-slate-800 mb-2">النشرة الإخبارية</h3>
+          <p className="text-slate-500 text-sm">اشترك لتصلك آخر مستجدات الجمعية</p>
+        </div>
+        {/* Form Section */}
+        <div className="flex-1 w-full">
+          <form className="relative flex items-center group" onSubmit={(e) => e.preventDefault()}>
+            <input 
+              type="email" 
+              placeholder="بريدك الإلكتروني"
+              className="w-full h-14 pr-6 pl-32 rounded-2xl border-2 border-slate-200 focus:border-cyan-500 focus:ring-0 transition-all text-right outline-none bg-white"
+            />
+            <button 
+              type="submit"
+              className="absolute left-2 bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors"
+            >
+              <Send size={18} />
+            </button>
+          </form>
+        </div>
+
+        {/* WhatsApp Secondary Button */}
+        <div className="flex flex-col items-center gap-2 border-r border-slate-200 pr-8 hidden md:flex">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all"
+            onClick={() => window.open('https://wa.me/yournumber')}
+          >
+            <MessageCircle size={18} />
+            واتساب
+          </motion.button>
+        </div>
+
+        {/* Mobile WhatsApp Button (Centered) */}
+        <div className="md:hidden flex flex-col items-center gap-3">
+          <span className="text-slate-400 text-xs">أو اشترك عبر الواتساب</span>
+          <button className="flex items-center gap-2 text-[#25D366] font-bold">
+            <MessageCircle size={20} />
+            تفعيل التنبيهات
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+    </>
   );
 };

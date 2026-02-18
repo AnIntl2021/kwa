@@ -113,7 +113,8 @@ export const Projects = () => {
     }
   };
 
-  return (
+  return (<>
+ 
     <section id="projects" className="section-padding relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-br from-secondary/10 to-transparent rounded-full blur-3xl animate-float"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
@@ -182,5 +183,25 @@ export const Projects = () => {
         </motion.div>
       </div>
     </section>
+    <section id="partnerships" className="section-padding relative overflow-hidden bg-blue-50">
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 flex items-center justify-center">
+          <div className="text-center text-white p-8">
+            <h3 className="text-4xl font-bold mb-4">هل أنت مستعد لتكون جزءاً من التغيير؟</h3>
+            <p className="text-xl mb-6 opacity-90">
+              ندعو جميع الشباب المبدعين للانضمام إلينا في الملتقى الشبابي الكويتي العربي الخامس. 
+              ساهم برؤيتك في ابتكار حلول مستدامة للمياه.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.href = '/youthForum.html'}
+              className="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
+            >
+              سجل الآن وانضم إلينا
+            </motion.button>
+          </div>
+        </div>
+</section>
+     </>
   );
 };

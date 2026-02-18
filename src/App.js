@@ -10,6 +10,7 @@ import { Awards } from "./components/Awards";
 import { Partnerships } from "./components/Partnerships";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import Gallery from "./components/Gallery";
 
 const Home = () => {
   return (
@@ -22,6 +23,7 @@ const Home = () => {
         <Training />
         <Awards />
         <Partnerships />
+        <Gallery/>
         <Contact />
       </main>
       <Footer />

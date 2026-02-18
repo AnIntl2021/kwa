@@ -10,6 +10,7 @@ export const Footer = () => {
       { name: 'الرئيسية', href: '#hero' },
       { name: 'من نحن', href: '#about' },
       { name: 'المشاريع', href: '#projects' },
+           { name: 'أخبار ووسائل إعلام', href: '#gallery' },
       { name: 'اتصل بنا', href: '#contact' }
     ],
     resources: [

@@ -1,14 +1,31 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { GraduationCap, Users, Laptop, Globe } from 'lucide-react';
+import { Button } from './ui/button';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription,
+  DialogFooter
+} from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { GraduationCap, Users, Laptop, Globe, Send, Upload, FileText } from 'lucide-react';
 
 export const Training = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.05
   });
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedTraining, setSelectedTraining] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const trainings = [
     {
@@ -52,9 +69,7 @@ export const Training = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
@@ -64,6 +79,17 @@ export const Training = () => {
       opacity: 1,
       y: 0,
       transition: { duration: 0.6 }
+    }
+  };
+
+  const handleInterestedClick = (title) => {
+    setSelectedTraining(title);
+    setIsOpen(true);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
     }
   };
 
@@ -98,7 +124,7 @@ export const Training = () => {
                   whileHover={{ y: -8 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="h-full bg-white hover:shadow-2xl transition-all duration-300 border-r-8 border-transparent hover:border-cyan-500 relative overflow-hidden">
+                  <Card className="h-full flex flex-col bg-white hover:shadow-2xl transition-all duration-300 border-r-8 border-transparent hover:border-cyan-500 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-200/30 to-transparent rounded-full blur-xl"></div>
                     <CardHeader className="relative z-10">
                       <div className="flex items-start justify-between gap-4">
@@ -118,10 +144,18 @@ export const Training = () => {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="relative z-10">
-                      <p className="text-muted-foreground text-right leading-relaxed">
+                    <CardContent className="relative z-10 flex-grow">
+                      <p className="text-muted-foreground text-right leading-relaxed mb-6">
                         {training.description}
                       </p>
+                      <div className="flex justify-end mt-auto">
+                        <Button 
+                          onClick={() => handleInterestedClick(training.title)}
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-full px-8"
+                        >
+                          مهتم بالبرنامج
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -153,9 +187,15 @@ export const Training = () => {
                       className="flex items-start gap-3 p-4 rounded-xl bg-white/70 hover:bg-white transition-all duration-300 border-2 border-transparent hover:border-cyan-300 hover:scale-105"
                     >
                       <div className="w-2 h-2 bg-gradient-to-r from-cyan-500 to-cyan-500 rounded-full mt-2 flex-shrink-0" />
-                      <p className="text-gray-700 text-right leading-relaxed font-medium">
+                      <p className="text-gray-700 text-right leading-relaxed font-medium flex-1">
                         {training}
                       </p>
+                      <button 
+                        onClick={() => handleInterestedClick(training)}
+                        className="text-xs text-cyan-600 font-bold hover:underline"
+                      >
+                        تسجيل
+                      </button>
                     </motion.div>
                   ))}
                 </div>
@@ -164,6 +204,97 @@ export const Training = () => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Registration Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[500px] text-right" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-cyan-600 text-right">طلب اهتمام بالتدريب</DialogTitle>
+            <DialogDescription className="text-gray-500 text-right">
+              أنت مهتم ببرنامج: <span className="font-bold text-gray-700">{selectedTraining}</span>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-2">
+                <Label htmlFor="lastName">الاسم الأخير</Label>
+                <Input id="lastName" placeholder="القبيلة / العائلة" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="middleName">الاسم الثاني</Label>
+                <Input id="middleName" placeholder="الأب" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="firstName">الاسم الأول</Label>
+                <Input id="firstName" placeholder="الاسم" />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Input id="email" type="email" placeholder="example@domain.com" className="text-left" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">رقم التواصل</Label>
+              <div className="flex gap-2">
+                <Input id="phone" placeholder="12345678" className="text-left flex-1" />
+                <div className="w-24 flex items-center justify-center bg-gray-100 border rounded-md text-sm font-mono">
+                  +965
+                </div>
+              </div>
+            </div>
+
+            {/* File Upload Field */}
+            <div className="space-y-2">
+              <Label htmlFor="file-upload">السيرة الذاتية أو الوثائق الداعمة</Label>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="flex items-center justify-between w-full px-4 py-2 border-2 border-dashed border-cyan-200 rounded-lg cursor-pointer hover:bg-cyan-50 hover:border-cyan-400 transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <Upload className="w-4 h-4 text-cyan-600" />
+                    <span className="text-sm text-gray-600">
+                      {selectedFile ? selectedFile.name : "اختر ملفاً..."}
+                    </span>
+                  </div>
+                  {selectedFile && <FileText className="w-4 h-4 text-green-500" />}
+                </label>
+                <p className="text-[10px] text-muted-foreground mt-1 text-right">
+                  الملفات المدعومة: PDF, DOCX (الحد الأقصى 5MB)
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="message">رسالة إضافية</Label>
+              <Textarea id="message" placeholder="اكتب استفسارك هنا..." className="min-h-[100px]" />
+            </div>
+          </div>
+
+          <DialogFooter className="sm:justify-start">
+            <Button 
+              className="w-full bg-cyan-600 hover:bg-cyan-700" 
+              onClick={() => {
+                // Here you would handle the actual upload/submit
+                console.log("File to upload:", selectedFile);
+                setIsOpen(false);
+              }}
+            >
+              <Send className="w-4 h-4 ml-2" /> إرسال الطلب
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

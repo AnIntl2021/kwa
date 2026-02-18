@@ -22,6 +22,7 @@ export const Navbar = () => {
     { name: 'التدريب', href: '#training' },
     { name: 'الجوائز', href: '#awards' },
     { name: 'الشراكات', href: '#partnerships' },
+     { name: 'أخبار ووسائل إعلام', href: '#gallery' },
     { name: 'اتصل بنا', href: '#contact' }
   ];
 
