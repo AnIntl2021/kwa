@@ -24,6 +24,7 @@ const GenericCrudAdmin = ({
   const [msg, setMsg] = useState('');
 
   const load = () => fetchFn().then(r => setItems(r.data.data || []));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, []);
 
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
