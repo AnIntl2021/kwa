@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent } from './ui/card';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
 
@@ -10,6 +10,24 @@ export const Contact = () => {
   const { lang, str } = useLanguage();
   const [config, setConfig] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email) { setMsg(str('الاسم والبريد مطلوبان', 'Name and email are required')); return; }
+    setSending(true);
+    try {
+      await publicApi.submitContact(form);
+      setMsg(str('تم إرسال رسالتك بنجاح!', 'Message sent successfully!'));
+      setForm({ name: '', email: '', phone: '', message: '' });
+    } catch {
+      setMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong, try again'));
+    } finally {
+      setSending(false);
+    }
+  };
 
   useEffect(() => {
     publicApi.getSiteConfig()
@@ -46,38 +64,86 @@ export const Contact = () => {
             </p>
           </motion.div>
 
-          <motion.div variants={itemVariants}>
-            <Card className="bg-white border-4 border-blue-300 hover:border-blue-500 hover:shadow-2xl transition-all duration-300 relative overflow-hidden max-w-2xl mx-auto">
-              <CardContent className="p-8 relative z-10">
-                <h3 className={`text-2xl font-bold mb-6 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                  <span className="bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent">
-                    {str('معلومات الاتصال', 'Contact Information')}
-                  </span>
-                </h3>
-                <div className="space-y-6">
-                  {contactInfo.map((info, index) => {
-                    const Icon = info.icon;
-                    const content = (
-                      <div className={`flex items-start gap-4 p-4 rounded-2xl hover:bg-gradient-to-r hover:from-cyan-100 hover:to-blue-100 transition-all duration-300 border-2 border-transparent hover:border-cyan-300 hover:scale-105 hover:shadow-lg ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-primary via-secondary to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
-                          <Icon className="h-7 w-7 text-white" />
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Contact Info */}
+            <motion.div variants={itemVariants}>
+              <Card className="h-full bg-white border-4 border-blue-300 hover:border-blue-500 hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-8">
+                  <h3 className={`text-2xl font-bold mb-6 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                    <span className="bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent">
+                      {str('معلومات الاتصال', 'Contact Information')}
+                    </span>
+                  </h3>
+                  <div className="space-y-6">
+                    {contactInfo.map((info, index) => {
+                      const Icon = info.icon;
+                      const content = (
+                        <div className={`flex items-start gap-4 p-4 rounded-2xl hover:bg-gradient-to-r hover:from-cyan-100 hover:to-blue-100 transition-all duration-300 border-2 border-transparent hover:border-cyan-300 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+                          <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary via-secondary to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
+                            <Icon className="h-6 w-6 text-white" />
+                          </div>
+                          <div className={`flex-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                            <p className="text-sm font-medium text-muted-foreground mb-1">{info.title}</p>
+                            <p className="text-foreground font-medium">{info.value}</p>
+                          </div>
                         </div>
-                        <div className={`flex-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                          <p className="text-sm font-medium text-muted-foreground mb-1">{info.title}</p>
-                          <p className="text-foreground font-medium">{info.value}</p>
-                        </div>
-                      </div>
-                    );
-                    return info.link ? (
-                      <a key={index} href={info.link} className="block">{content}</a>
-                    ) : (
-                      <div key={index}>{content}</div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                      );
+                      return info.link ? (
+                        <a key={index} href={info.link} className="block">{content}</a>
+                      ) : (
+                        <div key={index}>{content}</div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div variants={itemVariants}>
+              <Card className="h-full bg-white border-4 border-cyan-300 hover:border-cyan-500 hover:shadow-2xl transition-all duration-300">
+                <CardContent className="p-8">
+                  <h3 className={`text-2xl font-bold mb-6 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                    <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                      {str('أرسل رسالة', 'Send a Message')}
+                    </span>
+                  </h3>
+                  <form onSubmit={handleSend} className="space-y-4">
+                    <div>
+                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('الاسم الكامل', 'Full Name')} *</label>
+                      <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                        placeholder={str('أدخل اسمك', 'Enter your name')} dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('البريد الإلكتروني', 'Email')} *</label>
+                      <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                        placeholder="example@domain.com" dir="ltr"
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('رقم الهاتف', 'Phone')}</label>
+                      <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                        placeholder="+965 XXXX XXXX" dir="ltr"
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('الرسالة', 'Message')}</label>
+                      <textarea rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                        placeholder={str('اكتب رسالتك هنا...', 'Write your message here...')} dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm resize-none" />
+                    </div>
+                    {msg && <p className={`text-sm text-center font-medium ${msg.includes('نجاح') || msg.includes('success') ? 'text-green-600' : 'text-red-500'}`}>{msg}</p>}
+                    <button type="submit" disabled={sending}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-60 text-white font-bold rounded-xl transition-colors">
+                      <Send className="w-4 h-4" />
+                      {sending ? str('جاري الإرسال...', 'Sending...') : str('إرسال الرسالة', 'Send Message')}
+                    </button>
+                  </form>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

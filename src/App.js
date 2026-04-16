@@ -37,6 +37,7 @@ import TeamAdmin from "./admin/pages/TeamAdmin";
 import EventsAdmin from "./admin/pages/EventsAdmin";
 import PublicationsAdmin from "./admin/pages/PublicationsAdmin";
 import GalleryAdmin from "./admin/pages/GalleryAdmin";
+import SubmissionsAdmin from "./admin/pages/SubmissionsAdmin";
 import SettingsAdmin from "./admin/pages/SettingsAdmin";
 
 // Home page
@@ -99,6 +100,7 @@ function App() {
                 <Route path="events" element={<EventsAdmin />} />
                 <Route path="publications" element={<PublicationsAdmin />} />
                 <Route path="gallery" element={<GalleryAdmin />} />
+                <Route path="submissions" element={<SubmissionsAdmin />} />
                 <Route path="settings" element={<SettingsAdmin />} />
               </Route>
 

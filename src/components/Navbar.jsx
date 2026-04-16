@@ -27,7 +27,7 @@ export const Navbar = () => {
     { nameAr: 'التدريب', nameEn: 'Training', href: '#training' },
     { nameAr: 'الجوائز', nameEn: 'Awards', href: '#awards' },
     { nameAr: 'الشراكات', nameEn: 'Partnerships', href: '#partnerships' },
-    { nameAr: 'المعرض', nameEn: 'Gallery', href: '#gallery' },
+    { nameAr: 'الأخبار والإعلام', nameEn: 'News & Media', href: '#gallery' },
     { nameAr: 'اتصل بنا', nameEn: 'Contact', href: '#contact' },
   ];
 
@@ -83,15 +83,10 @@ export const Navbar = () => {
                 {lang === 'ar' ? link.nameAr : link.nameEn}
               </Button>
             ))}
-            {/* Events & Publications links */}
+            {/* Events link */}
             <Link to="/events">
               <Button variant="ghost" className="text-foreground hover:text-primary hover:bg-primary/10 font-medium text-sm px-3">
                 {str('الفعاليات', 'Events')}
-              </Button>
-            </Link>
-            <Link to="/publications">
-              <Button variant="ghost" className="text-foreground hover:text-primary hover:bg-primary/10 font-medium text-sm px-3">
-                {str('المطبوعات', 'Publications')}
               </Button>
             </Link>
           </div>
@@ -141,11 +136,6 @@ export const Navbar = () => {
               <Link to="/events" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button variant="ghost" className={`w-full ${lang === 'ar' ? 'justify-end' : 'justify-start'} hover:text-primary hover:bg-primary/10`}>
                   {str('الفعاليات', 'Events')}
-                </Button>
-              </Link>
-              <Link to="/publications" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="ghost" className={`w-full ${lang === 'ar' ? 'justify-end' : 'justify-start'} hover:text-primary hover:bg-primary/10`}>
-                  {str('المطبوعات', 'Publications')}
                 </Button>
               </Link>
             </div>

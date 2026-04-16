@@ -1,32 +1,38 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
-  Droplets, LayoutDashboard, Image, Users, Trophy, BookOpen, Calendar,
-  FileText, Settings, LogOut, Menu, X, Globe2, Handshake, GraduationCap,
-  FolderOpen, Star, ChevronRight
+  Droplets, LayoutDashboard, Image, Users, Trophy, Calendar,
+  FileText, Settings, LogOut, Menu, Globe2, Handshake, GraduationCap,
+  FolderOpen, Star, ChevronRight, MessageSquare
 } from 'lucide-react';
 
 const navItems = [
-  { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/site-config', label: 'Hero & About', icon: Settings },
-  { path: '/admin/projects', label: 'Projects', icon: FolderOpen },
-  { path: '/admin/training', label: 'Training', icon: GraduationCap },
-  { path: '/admin/awards', label: 'Awards', icon: Trophy },
-  { path: '/admin/memberships', label: 'Memberships', icon: Star },
-  { path: '/admin/partners', label: 'Partners', icon: Handshake },
-  { path: '/admin/team', label: 'Team', icon: Users },
-  { path: '/admin/events', label: 'Events', icon: Calendar },
-  { path: '/admin/publications', label: 'Publications', icon: FileText },
-  { path: '/admin/gallery', label: 'Gallery', icon: Image },
-  { path: '/admin/settings', label: 'Site Settings', icon: Globe2 },
+  { path: '/admin/dashboard',    en: 'Dashboard',     ar: 'لوحة التحكم',    icon: LayoutDashboard },
+  { path: '/admin/site-config',  en: 'Hero & About',  ar: 'الرئيسية و نبذة', icon: Settings },
+  { path: '/admin/projects',     en: 'Projects',      ar: 'المشاريع',        icon: FolderOpen },
+  { path: '/admin/training',     en: 'Training',      ar: 'التدريب',         icon: GraduationCap },
+  { path: '/admin/awards',       en: 'Awards',        ar: 'الجوائز',         icon: Trophy },
+  { path: '/admin/memberships',  en: 'Memberships',   ar: 'العضويات',        icon: Star },
+  { path: '/admin/partners',     en: 'Partners',      ar: 'الشركاء',         icon: Handshake },
+  { path: '/admin/team',         en: 'Team',          ar: 'الفريق',          icon: Users },
+  { path: '/admin/events',       en: 'Events',        ar: 'الفعاليات',       icon: Calendar },
+  { path: '/admin/publications', en: 'Publications',  ar: 'المنشورات',       icon: FileText },
+  { path: '/admin/gallery',      en: 'Gallery',       ar: 'المعرض',          icon: Image },
+  { path: '/admin/submissions',  en: 'Submissions',   ar: 'الرسائل',         icon: MessageSquare },
+  { path: '/admin/settings',     en: 'Site Settings', ar: 'إعدادات الموقع',  icon: Globe2 },
 ];
 
 const AdminLayout = () => {
   const { admin, logout } = useAdminAuth();
+  const { lang, toggleLang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const isAr = lang === 'ar';
+  const label = (item) => isAr ? item.ar : item.en;
 
   const handleLogout = () => {
     logout();
@@ -51,12 +57,13 @@ const AdminLayout = () => {
       {/* Nav */}
       <nav className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-1">
-          {navItems.map(({ path, label, icon: Icon }) => {
-            const isActive = location.pathname === path;
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
             return (
               <Link
-                key={path}
-                to={path}
+                key={item.path}
+                to={item.path}
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
@@ -65,7 +72,7 @@ const AdminLayout = () => {
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
-                <span className="flex-1">{label}</span>
+                <span className="flex-1">{label(item)}</span>
                 {isActive && <ChevronRight className="w-4 h-4" />}
               </Link>
             );
@@ -89,14 +96,15 @@ const AdminLayout = () => {
           className="w-full flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white/80 hover:bg-red-500/20 hover:text-red-300 transition-all"
         >
           <LogOut className="w-4 h-4" />
-          <span>Logout</span>
+          <span>{isAr ? 'تسجيل الخروج' : 'Logout'}</span>
         </button>
       </div>
     </div>
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    // Always LTR layout — admin chrome is always left-sidebar regardless of language
+    <div className="flex h-screen bg-gray-50 overflow-hidden" dir="ltr">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-shrink-0 bg-gradient-to-b from-cyan-700 to-blue-800 flex-col overflow-hidden">
         <SidebarContent />
@@ -123,21 +131,29 @@ const AdminLayout = () => {
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
           <h2 className="font-semibold text-gray-800">
-            {navItems.find(n => n.path === location.pathname)?.label || 'Admin Panel'}
+            {label(navItems.find(n => n.path === location.pathname) || { en: 'Admin Panel', ar: 'لوحة الإدارة' })}
           </h2>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={toggleLang}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-medium text-gray-600"
+              title={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
+            >
+              <Globe2 className="w-4 h-4 text-cyan-600" />
+              {isAr ? 'EN' : 'عر'}
+            </button>
             <Link
               to="/"
               target="_blank"
               className="text-sm text-cyan-600 hover:text-cyan-700 font-medium"
             >
-              View Website →
+              {isAr ? 'عرض الموقع ←' : 'View Website →'}
             </Link>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        {/* Content — text direction follows language for form fields */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6" dir={isAr ? 'rtl' : 'ltr'}>
           <Outlet />
         </main>
       </div>

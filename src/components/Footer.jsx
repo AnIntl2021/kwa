@@ -9,6 +9,8 @@ import { publicApi } from '../utils/api';
 export const Footer = () => {
   const { lang, str } = useLanguage();
   const [config, setConfig] = useState(null);
+  const [nlEmail, setNlEmail] = useState('');
+  const [nlMsg, setNlMsg] = useState('');
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -16,6 +18,21 @@ export const Footer = () => {
       .then(res => setConfig(res.data.data))
       .catch(() => {});
   }, []);
+
+  const handleNewsletter = async () => {
+    if (!nlEmail) return;
+    try {
+      const res = await publicApi.submitNewsletter(nlEmail);
+      setNlMsg(res.data.message === 'Already subscribed'
+        ? str('أنت مشترك بالفعل', 'Already subscribed')
+        : str('تم الاشتراك!', 'Subscribed!'));
+      setNlEmail('');
+    } catch {
+      setNlMsg(str('حدث خطأ', 'Error'));
+    } finally {
+      setTimeout(() => setNlMsg(''), 3000);
+    }
+  };
 
   const social = config?.social || {};
   const footerDesc = lang === 'ar'
@@ -121,12 +138,15 @@ export const Footer = () => {
               {str('اشترك في نشرتنا الإخبارية للحصول على آخر الأخبار والتحديثات', 'Subscribe to our newsletter for the latest news and updates')}
             </p>
             <div className={`flex gap-2 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-              <Button size="icon" className="bg-white text-primary hover:bg-white/90 flex-shrink-0">
+              <Button size="icon" onClick={handleNewsletter} className="bg-white text-primary hover:bg-white/90 flex-shrink-0">
                 <Mail className="h-5 w-5" />
               </Button>
-              <input type="email" placeholder={str('بريدك الإلكتروني', 'Your email')}
+              <input type="email" value={nlEmail} onChange={e => setNlEmail(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleNewsletter()}
+                placeholder={str('بريدك الإلكتروني', 'Your email')}
                 className="flex-1 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60 text-right focus:outline-none focus:border-white/40 transition-colors duration-300" />
             </div>
+            {nlMsg && <p className="text-xs mt-2 text-white/80 text-center">{nlMsg}</p>}
           </motion.div>
         </div>
 

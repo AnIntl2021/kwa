@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { GraduationCap, Users, Laptop, Globe, Send, Upload, FileText } from 'lucide-react';
+import { GraduationCap, Users, Laptop, Globe, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
 
@@ -20,7 +20,9 @@ export const Training = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMsg, setSubmitMsg] = useState('');
 
   useEffect(() => {
     publicApi.getTraining()
@@ -36,7 +38,23 @@ export const Training = () => {
 
   const handleInterestedClick = (title) => {
     setSelectedTraining(title);
+    setFormData({ name: '', email: '', phone: '', message: '' });
+    setSubmitMsg('');
     setIsOpen(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.email) { setSubmitMsg(str('البريد الإلكتروني مطلوب', 'Email is required')); return; }
+    setSubmitting(true);
+    try {
+      await publicApi.submitTraining({ ...formData, trainingName: selectedTraining });
+      setSubmitMsg(str('تم إرسال طلبك بنجاح!', 'Request submitted successfully!'));
+      setTimeout(() => setIsOpen(false), 1500);
+    } catch {
+      setSubmitMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong, try again'));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -137,24 +155,25 @@ export const Training = () => {
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
               <Label>{str('الاسم الكامل', 'Full Name')}</Label>
-              <Input placeholder={str('أدخل اسمك الكامل', 'Enter your full name')} />
+              <Input value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} placeholder={str('أدخل اسمك الكامل', 'Enter your full name')} />
             </div>
             <div className="space-y-2">
-              <Label>{str('البريد الإلكتروني', 'Email')}</Label>
-              <Input type="email" placeholder="example@domain.com" />
+              <Label>{str('البريد الإلكتروني', 'Email')} *</Label>
+              <Input type="email" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} placeholder="example@domain.com" />
             </div>
             <div className="space-y-2">
               <Label>{str('رقم التواصل', 'Phone')}</Label>
-              <Input placeholder="+965 XXXX XXXX" />
+              <Input value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} placeholder="+965 XXXX XXXX" />
             </div>
             <div className="space-y-2">
               <Label>{str('رسالة إضافية', 'Additional Message')}</Label>
-              <Textarea placeholder={str('اكتب استفسارك هنا...', 'Write your inquiry here...')} className="min-h-[80px]" />
+              <Textarea value={formData.message} onChange={e => setFormData(p => ({ ...p, message: e.target.value }))} placeholder={str('اكتب استفسارك هنا...', 'Write your inquiry here...')} className="min-h-[80px]" />
             </div>
+            {submitMsg && <p className={`text-sm text-center font-medium ${submitMsg.includes('نجاح') || submitMsg.includes('success') ? 'text-green-600' : 'text-red-500'}`}>{submitMsg}</p>}
           </div>
           <DialogFooter>
-            <Button className="w-full bg-cyan-600 hover:bg-cyan-700" onClick={() => setIsOpen(false)}>
-              <Send className="w-4 h-4 ml-2" /> {str('إرسال الطلب', 'Submit Request')}
+            <Button className="w-full bg-cyan-600 hover:bg-cyan-700" onClick={handleSubmit} disabled={submitting}>
+              <Send className="w-4 h-4 ml-2" /> {submitting ? str('جاري الإرسال...', 'Sending...') : str('إرسال الطلب', 'Submit Request')}
             </Button>
           </DialogFooter>
         </DialogContent>

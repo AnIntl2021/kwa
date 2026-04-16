@@ -18,6 +18,27 @@ export const Partnerships = () => {
   const [partners, setPartners] = useState([]);
   const [config, setConfig] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [nlEmail, setNlEmail] = useState('');
+  const [nlMsg, setNlMsg] = useState('');
+  const [nlSending, setNlSending] = useState(false);
+
+  const handleNewsletter = async (e) => {
+    e.preventDefault();
+    if (!nlEmail) return;
+    setNlSending(true);
+    try {
+      const res = await publicApi.submitNewsletter(nlEmail);
+      setNlMsg(res.data.message === 'Already subscribed'
+        ? str('أنت مشترك بالفعل', 'Already subscribed')
+        : str('تم الاشتراك بنجاح!', 'Subscribed successfully!'));
+      setNlEmail('');
+    } catch {
+      setNlMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong'));
+    } finally {
+      setNlSending(false);
+      setTimeout(() => setNlMsg(''), 3000);
+    }
+  };
 
   useEffect(() => {
     Promise.all([publicApi.getPartners(), publicApi.getSiteConfig()])
@@ -107,13 +128,15 @@ export const Partnerships = () => {
               <p className="text-slate-500 text-sm">{str('اشترك لتصلك آخر مستجدات الجمعية', 'Subscribe to receive the latest association updates')}</p>
             </div>
             <div className="flex-1 w-full">
-              <form className="relative flex items-center group" onSubmit={e => e.preventDefault()}>
-                <input type="email" placeholder={str('بريدك الإلكتروني', 'Your email address')}
+              <form className="relative flex items-center group" onSubmit={handleNewsletter}>
+                <input type="email" value={nlEmail} onChange={e => setNlEmail(e.target.value)}
+                  placeholder={str('بريدك الإلكتروني', 'Your email address')}
                   className="w-full h-14 pr-6 pl-32 rounded-2xl border-2 border-slate-200 focus:border-cyan-500 focus:ring-0 transition-all text-right outline-none bg-white" />
-                <button type="submit" className="absolute left-2 bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                <button type="submit" disabled={nlSending} className="absolute left-2 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-60 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors">
                   <Send size={18} />
                 </button>
               </form>
+              {nlMsg && <p className={`text-sm mt-2 text-center font-medium ${nlMsg.includes('نجاح') || nlMsg.includes('success') ? 'text-green-600' : 'text-slate-500'}`}>{nlMsg}</p>}
             </div>
             {whatsapp && (
               <div className="flex flex-col items-center gap-2 border-r border-slate-200 pr-8 hidden md:flex">

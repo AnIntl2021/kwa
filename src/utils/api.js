@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+const API_URL =  'https://api.kuwaitwaterassociation.org';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -28,7 +28,11 @@ export const publicApi = {
   getLatestEvents: () => api.get('/public/events/latest'),
   getEvents: () => api.get('/public/events'),
   getPublications: () => api.get('/public/publications'),
-  getGallery: () => api.get('/public/gallery')
+  getGallery: () => api.get('/public/gallery'),
+  // Form submissions
+  submitTraining: (data) => api.post('/public/submit/training', data),
+  submitContact: (data) => api.post('/public/submit/contact', data),
+  submitNewsletter: (email) => api.post('/public/submit/newsletter', { email }),
 };
 
 // Admin data helpers (require auth)
@@ -92,7 +96,15 @@ export const adminApi = {
   getGallery: () => api.get('/admin/gallery'),
   createGalleryImage: (data) => api.post('/admin/gallery', data),
   updateGalleryImage: (id, data) => api.put(`/admin/gallery/${id}`, data),
-  deleteGalleryImage: (id) => api.delete(`/admin/gallery/${id}`)
+  deleteGalleryImage: (id) => api.delete(`/admin/gallery/${id}`),
+
+  // Submissions
+  getSubmissions: (type) => api.get(`/admin/submissions${type ? `?type=${type}` : ''}`),
+  getUnreadCount: () => api.get('/admin/submissions/unread-count'),
+  markSubmissionRead: (id, isRead = true) => api.patch(`/admin/submissions/${id}/read`, { isRead }),
+  markAllRead: () => api.patch('/admin/submissions/mark-all-read'),
+  deleteSubmission: (id) => api.delete(`/admin/submissions/${id}`),
+  deleteSubmissions: (type) => api.delete(`/admin/submissions${type ? `?type=${type}` : ''}`),
 };
 
 export default api;
