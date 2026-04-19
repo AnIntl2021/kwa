@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent } from './ui/card';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import PhoneInput from './ui/PhoneInput';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
 
@@ -10,7 +11,7 @@ export const Contact = () => {
   const { lang, str } = useLanguage();
   const [config, setConfig] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', landline: '', message: '' });
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -21,7 +22,7 @@ export const Contact = () => {
     try {
       await publicApi.submitContact(form);
       setMsg(str('تم إرسال رسالتك بنجاح!', 'Message sent successfully!'));
-      setForm({ name: '', email: '', phone: '', message: '' });
+      setForm({ name: '', email: '', phone: '', landline: '', message: '' });
     } catch {
       setMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong, try again'));
     } finally {
@@ -121,11 +122,27 @@ export const Contact = () => {
                         placeholder="example@domain.com" dir="ltr"
                         className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
                     </div>
+                    <PhoneInput
+                      label={str('رقم الجوال', 'Mobile Phone')}
+                      value={form.phone}
+                      onChange={v => setForm(p => ({ ...p, phone: v }))}
+                    />
                     <div>
-                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('رقم الهاتف', 'Phone')}</label>
-                      <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                        placeholder="+965 XXXX XXXX" dir="ltr"
-                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                        {str('رقم الهاتف الأرضي', 'Landline Number')}
+                      </label>
+                      <div className="flex gap-0" dir="ltr">
+                        <span className="flex items-center px-3 h-[42px] border-2 border-r-0 border-gray-200 rounded-l-xl bg-gray-50 text-gray-500 text-sm font-medium whitespace-nowrap">
+                          📞
+                        </span>
+                        <input
+                          type="tel"
+                          value={form.landline}
+                          onChange={e => setForm(p => ({ ...p, landline: e.target.value.replace(/[^0-9\s\-+]/g, '') }))}
+                          placeholder="e.g. +965 2200 0000"
+                          className="flex-1 px-3 h-[42px] border-2 border-gray-200 rounded-r-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('الرسالة', 'Message')}</label>

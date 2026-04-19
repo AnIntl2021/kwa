@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, ArrowLeft, UserPlus, X, Send } from 'lucide-react';
+import PhoneInput from '../components/ui/PhoneInput';
 import { Card, CardContent } from '../components/ui/card';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
@@ -12,6 +13,10 @@ const EventsPage = () => {
   const { lang, t, str } = useLanguage();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [volunteer, setVolunteer] = useState(null); // selected event
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     publicApi.getEvents()
@@ -22,10 +27,28 @@ const EventsPage = () => {
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    if (lang === 'ar') {
-      return date.toLocaleDateString('ar-KW', { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString(lang === 'ar' ? 'ar-KW' : 'en-KW', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const openVolunteer = (event) => {
+    setVolunteer(event);
+    setForm({ name: '', email: '', phone: '', message: '' });
+    setMsg('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name || !form.email) { setMsg(str('الاسم والبريد مطلوبان', 'Name and email are required')); return; }
+    setSending(true);
+    try {
+      await publicApi.submitVolunteer({ ...form, eventName: t(volunteer, 'title') });
+      setMsg(str('تم إرسال طلبك بنجاح!', 'Request submitted successfully!'));
+      setTimeout(() => setVolunteer(null), 1800);
+    } catch {
+      setMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong, try again'));
+    } finally {
+      setSending(false);
     }
-    return date.toLocaleDateString('en-KW', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   const BackArrow = lang === 'ar' ? ArrowLeft : ArrowRight;
@@ -45,11 +68,7 @@ const EventsPage = () => {
         </div>
 
         <div className="container-custom">
-          {/* Back link */}
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 font-medium mb-8 transition-colors"
-          >
+          <Link to="/" className="inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 font-medium mb-8 transition-colors">
             <BackArrow size={18} />
             {str('العودة للرئيسية', 'Back to Home')}
           </Link>
@@ -67,32 +86,26 @@ const EventsPage = () => {
             </div>
           ) : (
             <motion.div
-              initial="hidden"
-              animate="visible"
+              initial="hidden" animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {events.map((event, index) => (
-                <motion.div
-                  key={event._id || index}
-                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-                  whileHover={{ y: -6 }}
-                >
-                  <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-cyan-300">
-                    {event.image && (
+                <motion.div key={event._id || index} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} whileHover={{ y: -6 }}>
+                  <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-cyan-300 flex flex-col">
+                    {event.image ? (
                       <div className="h-48 overflow-hidden">
                         <img src={event.image} alt={t(event, 'title')} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
                       </div>
-                    )}
-                    {!event.image && (
+                    ) : (
                       <div className="h-32 bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
                         <Calendar className="w-16 h-16 text-white/50" />
                       </div>
                     )}
-                    <CardContent className={`p-6 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                    <CardContent className={`p-6 flex flex-col flex-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
                       <h3 className="text-xl font-bold text-gray-800 mb-3">{t(event, 'title')}</h3>
                       <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">{t(event, 'description')}</p>
-                      <div className="space-y-2">
+                      <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-sm text-cyan-600">
                           <Calendar size={14} />
                           <span>{formatDate(event.date)}</span>
@@ -104,6 +117,15 @@ const EventsPage = () => {
                           </div>
                         )}
                       </div>
+                      <div className="mt-auto">
+                        <button
+                          onClick={() => openVolunteer(event)}
+                          className="w-full flex items-center justify-center gap-2 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl transition-colors text-sm"
+                        >
+                          <UserPlus size={16} />
+                          {str('انضم كمتطوع', 'Join as Volunteer')}
+                        </button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -113,6 +135,75 @@ const EventsPage = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Volunteer Modal */}
+      <AnimatePresence>
+        {volunteer && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+            onClick={() => setVolunteer(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
+              onClick={e => e.stopPropagation()}
+              dir={lang === 'ar' ? 'rtl' : 'ltr'}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b">
+                <div>
+                  <h2 className="text-lg font-bold text-gray-800">{str('انضم كمتطوع', 'Join as Volunteer')}</h2>
+                  <p className="text-sm text-cyan-600 mt-0.5">{t(volunteer, 'title')}</p>
+                </div>
+                <button onClick={() => setVolunteer(null)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{str('الاسم الكامل', 'Full Name')} *</label>
+                  <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                    placeholder={str('أدخل اسمك الكامل', 'Enter your full name')}
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{str('البريد الإلكتروني', 'Email')} *</label>
+                  <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                    placeholder="example@domain.com" dir="ltr"
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                </div>
+                <PhoneInput
+                  label={str('رقم الهاتف', 'Phone')}
+                  value={form.phone}
+                  onChange={v => setForm(p => ({ ...p, phone: v }))}
+                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{str('لماذا تريد التطوع؟', 'Why do you want to volunteer?')}</label>
+                  <textarea rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                    placeholder={str('اكتب رسالتك هنا...', 'Write your message here...')}
+                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm resize-none" />
+                </div>
+                {msg && (
+                  <p className={`text-sm text-center font-medium ${msg.includes('نجاح') || msg.includes('success') ? 'text-green-600' : 'text-red-500'}`}>{msg}</p>
+                )}
+                <button type="submit" disabled={sending}
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:opacity-60 text-white font-bold rounded-xl transition-colors">
+                  <Send size={16} />
+                  {sending ? str('جاري الإرسال...', 'Sending...') : str('إرسال الطلب', 'Submit Request')}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

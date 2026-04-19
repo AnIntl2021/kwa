@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { GraduationCap, Users, Laptop, Globe, Send } from 'lucide-react';
+import PhoneInput from './ui/PhoneInput';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
 
@@ -161,9 +162,12 @@ export const Training = () => {
               <Label>{str('البريد الإلكتروني', 'Email')} *</Label>
               <Input type="email" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} placeholder="example@domain.com" />
             </div>
-            <div className="space-y-2">
-              <Label>{str('رقم التواصل', 'Phone')}</Label>
-              <Input value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} placeholder="+965 XXXX XXXX" />
+            <div className="space-y-2 md:col-span-2">
+              <PhoneInput
+                label={str('رقم التواصل', 'Phone')}
+                value={formData.phone}
+                onChange={v => setFormData(p => ({ ...p, phone: v }))}
+              />
             </div>
             <div className="space-y-2">
               <Label>{str('رسالة إضافية', 'Additional Message')}</Label>

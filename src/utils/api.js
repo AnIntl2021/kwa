@@ -33,10 +33,14 @@ export const publicApi = {
   submitTraining: (data) => api.post('/public/submit/training', data),
   submitContact: (data) => api.post('/public/submit/contact', data),
   submitNewsletter: (email) => api.post('/public/submit/newsletter', { email }),
+  submitVolunteer: (data) => api.post('/public/submit/volunteer', data),
 };
 
 // Admin data helpers (require auth)
 export const adminApi = {
+  // Auth
+  changePassword: (data) => api.put('/auth/change-password', data),
+
   // Upload
   uploadFile: (formData) => api.post('/admin/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 

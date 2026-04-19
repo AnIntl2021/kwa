@@ -6,18 +6,21 @@ const TYPES = [
   { value: '', label: 'All' },
   { value: 'contact', label: 'Contact' },
   { value: 'training_interest', label: 'Training Interest' },
+  { value: 'volunteer', label: 'Volunteer' },
   { value: 'newsletter', label: 'Newsletter' },
 ];
 
 const typeBadge = {
   contact: 'bg-blue-100 text-blue-700',
   training_interest: 'bg-violet-100 text-violet-700',
+  volunteer: 'bg-orange-100 text-orange-700',
   newsletter: 'bg-green-100 text-green-700',
 };
 
 const typeLabel = {
   contact: 'Contact',
   training_interest: 'Training',
+  volunteer: 'Volunteer',
   newsletter: 'Newsletter',
 };
 
@@ -148,8 +151,10 @@ const SubmissionsAdmin = () => {
                 <div className="px-4 pb-4 border-t border-gray-100 mt-0 pt-4 grid sm:grid-cols-2 gap-3 text-sm">
                   {item.name && <div><span className="text-gray-500 font-medium">Name: </span>{item.name}</div>}
                   {item.email && <div><span className="text-gray-500 font-medium">Email: </span><a href={`mailto:${item.email}`} className="text-cyan-600 hover:underline">{item.email}</a></div>}
-                  {item.phone && <div><span className="text-gray-500 font-medium">Phone: </span>{item.phone}</div>}
+                  {item.phone && <div><span className="text-gray-500 font-medium">Mobile: </span>{item.phone}</div>}
+                  {item.landline && <div><span className="text-gray-500 font-medium">Landline: </span>{item.landline}</div>}
                   {item.trainingName && <div><span className="text-gray-500 font-medium">Training: </span>{item.trainingName}</div>}
+                  {item.eventName && <div><span className="text-gray-500 font-medium">Event: </span>{item.eventName}</div>}
                   {item.message && <div className="sm:col-span-2"><span className="text-gray-500 font-medium">Message: </span>{item.message}</div>}
                   <div className="sm:col-span-2 text-xs text-gray-400">{new Date(item.createdAt).toLocaleString()}</div>
                 </div>
