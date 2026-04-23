@@ -91,9 +91,7 @@ const SettingsAdmin = () => {
         <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="font-semibold text-gray-700 mb-4">Social Media Links</h2>
           <div className="space-y-4">
-            <F label="Twitter URL" value={config.social?.twitter} onChange={v => update('social.twitter', v)} />
             <F label="Instagram URL" value={config.social?.instagram} onChange={v => update('social.instagram', v)} />
-            <F label="YouTube URL" value={config.social?.youtube} onChange={v => update('social.youtube', v)} />
             <F label="WhatsApp Number (with country code)" value={config.social?.whatsapp} onChange={v => update('social.whatsapp', v)} />
           </div>
         </section>
@@ -104,6 +102,26 @@ const SettingsAdmin = () => {
           <div className="space-y-4">
             <F label="Footer Description (Arabic)" value={config.footerDescriptionAr} onChange={v => update('footerDescriptionAr', v)} dir="rtl" textarea />
             <F label="Footer Description (English)" value={config.footerDescriptionEn} onChange={v => update('footerDescriptionEn', v)} textarea />
+          </div>
+        </section>
+
+        {/* Privacy Policy */}
+        <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="font-semibold text-gray-700 mb-1">Privacy Policy</h2>
+          <p className="text-xs text-gray-400 mb-4">Shown at <span className="font-mono">/privacy-policy</span></p>
+          <div className="space-y-4">
+            <F label="Privacy Policy (Arabic)" value={config.privacyPolicyAr} onChange={v => update('privacyPolicyAr', v)} dir="rtl" textarea rows={10} />
+            <F label="Privacy Policy (English)" value={config.privacyPolicyEn} onChange={v => update('privacyPolicyEn', v)} textarea rows={10} />
+          </div>
+        </section>
+
+        {/* Terms of Use */}
+        <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="font-semibold text-gray-700 mb-1">Terms of Use</h2>
+          <p className="text-xs text-gray-400 mb-4">Shown at <span className="font-mono">/terms</span></p>
+          <div className="space-y-4">
+            <F label="Terms of Use (Arabic)" value={config.termsAr} onChange={v => update('termsAr', v)} dir="rtl" textarea rows={10} />
+            <F label="Terms of Use (English)" value={config.termsEn} onChange={v => update('termsEn', v)} textarea rows={10} />
           </div>
         </section>
       </div>
@@ -152,11 +170,11 @@ const SettingsAdmin = () => {
   );
 };
 
-const F = ({ label, value, onChange, dir, textarea }) => (
+const F = ({ label, value, onChange, dir, textarea, rows = 3 }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
     {textarea
-      ? <textarea value={value || ''} onChange={e => onChange(e.target.value)} dir={dir} rows={3} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm resize-none" />
+      ? <textarea value={value || ''} onChange={e => onChange(e.target.value)} dir={dir} rows={rows} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm resize-y" />
       : <input type="text" value={value || ''} onChange={e => onChange(e.target.value)} dir={dir} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm" />
     }
   </div>

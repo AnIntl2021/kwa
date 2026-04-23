@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Droplets, Twitter, Instagram, Youtube, Mail } from 'lucide-react';
+import { Droplets, Instagram, Mail } from 'lucide-react';
 import { Button } from './ui/button';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
@@ -55,9 +55,7 @@ export const Footer = () => {
   ];
 
   const socialIcons = [
-    { icon: Twitter, href: social.twitter || '#', label: 'Twitter' },
     { icon: Instagram, href: social.instagram || '#', label: 'Instagram' },
-    { icon: Youtube, href: social.youtube || '#', label: 'Youtube' },
   ];
 
   const scrollToSection = (href) => {
@@ -154,8 +152,8 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/70">
             <p>{str(`© ${currentYear} جمعية المياه الكويتية. جميع الحقوق محفوظة.`, `© ${currentYear} Kuwait Water Association. All rights reserved.`)}</p>
             <div className="flex gap-6">
-              <button className="hover:text-white transition-colors duration-300">{str('سياسة الخصوصية', 'Privacy Policy')}</button>
-              <button className="hover:text-white transition-colors duration-300">{str('شروط الاستخدام', 'Terms of Use')}</button>
+              <Link to="/privacy-policy" className="hover:text-white transition-colors duration-300">{str('سياسة الخصوصية', 'Privacy Policy')}</Link>
+              <Link to="/terms" className="hover:text-white transition-colors duration-300">{str('شروط الاستخدام', 'Terms of Use')}</Link>
             </div>
           </div>
         </div>

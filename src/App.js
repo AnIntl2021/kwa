@@ -22,6 +22,8 @@ import { Footer } from "./components/Footer";
 // Pages
 import EventsPage from "./pages/EventsPage";
 import PublicationsPage from "./pages/PublicationsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsPage from "./pages/TermsPage";
 
 // Admin
 import AdminLogin from "./admin/AdminLogin";
@@ -82,6 +84,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<EventsPage />} />
               <Route path="/publications" element={<PublicationsPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
 
               {/* Admin auth */}
               <Route path="/admin/login" element={<AdminLogin />} />
