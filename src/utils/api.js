@@ -42,7 +42,8 @@ export const adminApi = {
   changePassword: (data) => api.put('/auth/change-password', data),
 
   // Upload
-  uploadFile: (formData) => api.post('/admin/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  uploadFile: (formData) => api.post('/admin/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 300000 }),
+  getPresignedUrl: (folder, filename, contentType) => api.get(`/admin/presigned-url?folder=${folder}&filename=${encodeURIComponent(filename)}&contentType=${encodeURIComponent(contentType)}`),
 
   // Site config
   getSiteConfig: () => api.get('/admin/site-config'),

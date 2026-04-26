@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi } from '../../utils/api';
 import ImageUpload from '../components/ImageUpload';
-import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, FileText, Upload } from 'lucide-react';
+import PdfUpload from '../components/PdfUpload';
+import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, FileText } from 'lucide-react';
 
 const empty = { titleAr: '', titleEn: '', descriptionAr: '', descriptionEn: '', pdfUrl: '', coverImage: '', publishDate: new Date().toISOString().split('T')[0], order: 0, isActive: true };
 
@@ -9,26 +10,12 @@ const PublicationsAdmin = () => {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [msg, setMsg] = useState('');
-  const pdfRef = useRef();
 
   const load = () => adminApi.getPublications().then(r => setItems(r.data.data || []));
   useEffect(() => { load(); }, []);
 
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
-  const uploadPdf = async (file) => {
-    setUploadingPdf(true);
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('folder', 'kwa/publications');
-      const res = await adminApi.uploadFile(fd);
-      setForm(p => ({ ...p, pdfUrl: res.data.url }));
-    } catch { showMsg('PDF upload failed.'); }
-    finally { setUploadingPdf(false); }
-  };
 
   const save = async () => {
     setSaving(true);
@@ -78,28 +65,7 @@ const PublicationsAdmin = () => {
                 <F label="Order" type="number" value={form.order} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} />
               </div>
 
-              {/* PDF Upload */}
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">PDF File *</label>
-                {form.pdfUrl ? (
-                  <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
-                    <FileText className="w-5 h-5 text-green-600" />
-                    <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-green-700 font-medium flex-1 truncate hover:underline">PDF Uploaded</a>
-                    <button type="button" onClick={() => setForm(p => ({ ...p, pdfUrl: '' }))} className="text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => pdfRef.current?.click()}
-                    className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all"
-                  >
-                    {uploadingPdf
-                      ? <div className="flex items-center justify-center gap-2 text-sm text-gray-500"><div className="w-4 h-4 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" /><span>Uploading PDF...</span></div>
-                      : <div className="flex items-center justify-center gap-2 text-sm text-gray-500"><Upload className="w-4 h-4" /><span>Click to upload PDF</span></div>
-                    }
-                  </div>
-                )}
-                <input ref={pdfRef} type="file" accept=".pdf" className="hidden" onChange={e => e.target.files[0] && uploadPdf(e.target.files[0])} />
-              </div>
+              <PdfUpload label="PDF File *" value={form.pdfUrl} onChange={v => setForm(p => ({ ...p, pdfUrl: v }))} folder="publications" />
 
               <ImageUpload label="Cover Image (optional)" value={form.coverImage} onChange={v => setForm(p => ({ ...p, coverImage: v }))} folder="kwa/publications" />
               <label className="flex items-center gap-2 cursor-pointer">

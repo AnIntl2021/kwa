@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Droplets, Instagram, Mail } from 'lucide-react';
 import { Button } from './ui/button';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,6 +8,8 @@ import { publicApi } from '../utils/api';
 
 export const Footer = () => {
   const { lang, str } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [config, setConfig] = useState(null);
   const [nlEmail, setNlEmail] = useState('');
   const [nlMsg, setNlMsg] = useState('');
@@ -59,8 +61,16 @@ export const Footer = () => {
   ];
 
   const scrollToSection = (href) => {
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.querySelector(href);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    } else {
+      const el = document.querySelector(href);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
