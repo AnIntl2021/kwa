@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../utils/api';
 import ImageUpload from '../components/ImageUpload';
 import PdfUpload from '../components/PdfUpload';
+import RichEditor from '../components/RichEditor';
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, FileText } from 'lucide-react';
 
 const empty = { titleAr: '', titleEn: '', descriptionAr: '', descriptionEn: '', pdfUrl: '', coverImage: '', publishDate: new Date().toISOString().split('T')[0], order: 0, isActive: true };
@@ -59,10 +60,16 @@ const PublicationsAdmin = () => {
               <div className="grid grid-cols-2 gap-4">
                 <F label="Title (Arabic)" value={form.titleAr} onChange={v => setForm(p => ({ ...p, titleAr: v }))} dir="rtl" />
                 <F label="Title (English)" value={form.titleEn} onChange={v => setForm(p => ({ ...p, titleEn: v }))} />
-                <F label="Description (Arabic)" value={form.descriptionAr} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" textarea />
-                <F label="Description (English)" value={form.descriptionEn} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} textarea />
                 <F label="Publish Date" type="date" value={form.publishDate?.split('T')[0] || ''} onChange={v => setForm(p => ({ ...p, publishDate: v }))} />
                 <F label="Order" type="number" value={form.order} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (Arabic)</label>
+                <RichEditor key={`${form._id || 'new'}-descAr`} value={form.descriptionAr || ''} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (English)</label>
+                <RichEditor key={`${form._id || 'new'}-descEn`} value={form.descriptionEn || ''} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} dir="ltr" />
               </div>
 
               <PdfUpload label="PDF File *" value={form.pdfUrl} onChange={v => setForm(p => ({ ...p, pdfUrl: v }))} folder="publications" />

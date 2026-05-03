@@ -135,6 +135,17 @@
     }
 }
 
+/* Rich text content rendered from WYSIWYG editor */
+.rich-content h2 { font-size: 1.2em; font-weight: 700; margin: .6em 0 .3em; }
+.rich-content h3 { font-size: 1.05em; font-weight: 600; margin: .5em 0 .25em; }
+.rich-content ul { list-style: disc; padding-inline-start: 1.4em; margin: .4em 0; }
+.rich-content ol { list-style: decimal; padding-inline-start: 1.4em; margin: .4em 0; }
+.rich-content li { margin: .15em 0; }
+.rich-content b, .rich-content strong { font-weight: 700; }
+.rich-content i, .rich-content em { font-style: italic; }
+.rich-content u { text-decoration: underline; }
+.rich-content p { margin: .3em 0; }
+
 @layer utilities {
     .animate-float {
         animation: float 6s ease-in-out infinite;

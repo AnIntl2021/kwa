@@ -13,10 +13,12 @@ const EventsPage = () => {
   const { lang, t, str } = useLanguage();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [volunteer, setVolunteer] = useState(null); // selected event
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const emptyForm = { firstName: '', middleName: '', lastName: '', designation: '', company: '', email: '', phone: '', message: '' };
+  const [volunteer, setVolunteer] = useState(null);
+  const [form, setForm] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState('');
+  const fv = (k) => (v) => setForm(p => ({ ...p, [k]: v }));
 
   useEffect(() => {
     publicApi.getEvents()
@@ -32,13 +34,13 @@ const EventsPage = () => {
 
   const openVolunteer = (event) => {
     setVolunteer(event);
-    setForm({ name: '', email: '', phone: '', message: '' });
+    setForm(emptyForm);
     setMsg('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) { setMsg(str('الاسم والبريد مطلوبان', 'Name and email are required')); return; }
+    if (!form.firstName || !form.email) { setMsg(str('الاسم الأول والبريد مطلوبان', 'First name and email are required')); return; }
     setSending(true);
     try {
       await publicApi.submitVolunteer({ ...form, eventName: t(volunteer, 'title') });
@@ -151,7 +153,7 @@ const EventsPage = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
+              className="bg-white rounded-2xl w-full max-w-lg shadow-2xl"
               onClick={e => e.stopPropagation()}
               dir={lang === 'ar' ? 'rtl' : 'ltr'}
             >
@@ -167,27 +169,28 @@ const EventsPage = () => {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{str('الاسم الكامل', 'Full Name')} *</label>
-                  <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                    placeholder={str('أدخل اسمك الكامل', 'Enter your full name')}
-                    className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+              <form onSubmit={handleSubmit} className="p-6 space-y-3">
+                {/* Name */}
+                <div className="grid grid-cols-3 gap-2">
+                  <VF label={str('الاسم الأول', 'First Name') + ' *'} value={form.firstName} onChange={fv('firstName')} lang={lang} />
+                  <VF label={str('الاسم الأوسط', 'Middle Name')} value={form.middleName} onChange={fv('middleName')} lang={lang} />
+                  <VF label={str('اسم العائلة', 'Last Name')} value={form.lastName} onChange={fv('lastName')} lang={lang} />
+                </div>
+                {/* Professional */}
+                <div className="grid grid-cols-2 gap-2">
+                  <VF label={str('المسمى الوظيفي', 'Designation')} value={form.designation} onChange={fv('designation')} lang={lang} />
+                  <VF label={str('الشركة / الجهة', 'Company')} value={form.company} onChange={fv('company')} lang={lang} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{str('البريد الإلكتروني', 'Email')} *</label>
-                  <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                  <input type="email" value={form.email} onChange={e => fv('email')(e.target.value)}
                     placeholder="example@domain.com" dir="ltr"
                     className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
                 </div>
-                <PhoneInput
-                  label={str('رقم الهاتف', 'Phone')}
-                  value={form.phone}
-                  onChange={v => setForm(p => ({ ...p, phone: v }))}
-                />
+                <PhoneInput label={str('رقم الهاتف', 'Phone')} value={form.phone} onChange={fv('phone')} />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{str('لماذا تريد التطوع؟', 'Why do you want to volunteer?')}</label>
-                  <textarea rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                  <textarea rows={2} value={form.message} onChange={e => fv('message')(e.target.value)}
                     placeholder={str('اكتب رسالتك هنا...', 'Write your message here...')}
                     className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm resize-none" />
                 </div>
@@ -207,5 +210,13 @@ const EventsPage = () => {
     </div>
   );
 };
+
+const VF = ({ label, value, onChange, lang }) => (
+  <div>
+    <label className={`block text-xs font-medium text-gray-600 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{label}</label>
+    <input value={value} onChange={e => onChange(e.target.value)} dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+  </div>
+);
 
 export default EventsPage;

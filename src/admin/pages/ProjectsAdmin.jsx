@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../utils/api';
 import ImageUpload from '../components/ImageUpload';
+import RichEditor from '../components/RichEditor';
 import { Plus, Pencil, Trash2, X, Check, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const empty = { titleAr: '', titleEn: '', descriptionAr: '', descriptionEn: '', image: '', tagsAr: [], tagsEn: [], year: '', order: 0, isActive: true };
@@ -65,12 +66,18 @@ const ProjectsAdmin = () => {
               <div className="grid grid-cols-2 gap-4">
                 <F label="Title (Arabic)" value={form.titleAr} onChange={v => setForm(p => ({ ...p, titleAr: v }))} dir="rtl" />
                 <F label="Title (English)" value={form.titleEn} onChange={v => setForm(p => ({ ...p, titleEn: v }))} />
-                <F label="Description (AR)" value={form.descriptionAr} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" textarea />
-                <F label="Description (EN)" value={form.descriptionEn} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} textarea />
                 <F label="Tags (AR, comma-separated)" value={(form.tagsAr || []).join(', ')} onChange={v => setForm(p => ({ ...p, tagsAr: v.split(',').map(t => t.trim()).filter(Boolean) }))} />
                 <F label="Tags (EN, comma-separated)" value={(form.tagsEn || []).join(', ')} onChange={v => setForm(p => ({ ...p, tagsEn: v.split(',').map(t => t.trim()).filter(Boolean) }))} />
                 <F label="Year" value={form.year} onChange={v => setForm(p => ({ ...p, year: v }))} />
                 <F label="Order" type="number" value={form.order} onChange={v => setForm(p => ({ ...p, order: Number(v) }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (Arabic)</label>
+                <RichEditor key={`${form._id || 'new'}-descAr`} value={form.descriptionAr || ''} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (English)</label>
+                <RichEditor key={`${form._id || 'new'}-descEn`} value={form.descriptionEn || ''} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} dir="ltr" />
               </div>
               <ImageUpload label="Project Image" value={form.image} onChange={v => setForm(p => ({ ...p, image: v }))} folder="kwa/projects" />
               <label className="flex items-center gap-2 cursor-pointer">

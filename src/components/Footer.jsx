@@ -83,15 +83,15 @@ export const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <div className={`flex items-center gap-3 mb-6 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-              <img src="https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/bo5n5bu5_kwa%20logo.png" alt="KWA" className="h-16 w-16 object-contain bg-white rounded-full p-2" />
-              <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
+            <div className="flex flex-col items-center text-center  gap-3">
+              <img src="https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/bo5n5bu5_kwa%20logo.png" alt="KWA" className="h-24 w-24 object-contain  rounded-full p-1" />
+              <div>
                 <h3 className="text-xl font-bold">{str('جمعية المياه الكويتية', 'Kuwait Water Association')}</h3>
                 <p className="text-sm text-white/80">{str('Kuwait Water Association', 'جمعية المياه الكويتية')}</p>
               </div>
             </div>
-            <p className={`text-white/80 leading-relaxed mb-6 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{footerDesc}</p>
-            <div className={`flex gap-3 ${lang === 'ar' ? 'justify-end' : 'justify-start'}`}>
+            <p className="text-white/80 leading-relaxed mb-6 text-center">{footerDesc}</p>
+            <div className="flex gap-3 justify-center">
               {socialIcons.map((s, i) => {
                 const Icon = s.icon;
                 return (

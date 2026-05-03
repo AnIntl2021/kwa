@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FileText, Download, ArrowRight, ArrowLeft, BookOpen } from 'lucide-react';
+import { FileText, Download, ArrowRight, ArrowLeft, BookOpen, Eye, X } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
@@ -12,6 +12,7 @@ const PublicationsPage = () => {
   const { lang, t, str } = useLanguage();
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
     publicApi.getPublications()
@@ -94,17 +95,26 @@ const PublicationsPage = () => {
                       {(pub.descriptionAr || pub.descriptionEn) && (
                         <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">{t(pub, 'description')}</p>
                       )}
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 gap-2 flex-wrap">
                         <span className="text-xs text-gray-400">{formatDate(pub.publishDate)}</span>
-                        <a
-                          href={pub.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md"
-                        >
-                          <Download size={14} />
-                          {str('تحميل PDF', 'Download PDF')}
-                        </a>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setPreview(pub)}
+                            className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            <Eye size={14} />
+                            {str('معاينة', 'Preview')}
+                          </button>
+                          <a
+                            href={pub.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shadow-md"
+                          >
+                            <Download size={14} />
+                            {str('تحميل', 'Download')}
+                          </a>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -115,6 +125,55 @@ const PublicationsPage = () => {
         </div>
       </main>
       <Footer />
+
+      {/* PDF Preview Modal */}
+      <AnimatePresence>
+        {preview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setPreview(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col"
+              style={{ height: '90vh' }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0">
+                <h3 className="font-semibold text-gray-800 truncate flex-1 mr-4">
+                  {lang === 'ar' ? preview.titleAr || preview.titleEn : preview.titleEn}
+                </h3>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <a href={preview.pdfUrl} target="_blank" rel="noopener noreferrer" download
+                    className="inline-flex items-center gap-1.5 bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                    <Download size={14} />
+                    {str('تحميل', 'Download')}
+                  </a>
+                  <button onClick={() => setPreview(null)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <X size={16} className="text-gray-600" />
+                  </button>
+                </div>
+              </div>
+              {/* PDF iframe */}
+              <div className="flex-1 overflow-hidden rounded-b-2xl">
+                <iframe
+                  src={`${preview.pdfUrl}#toolbar=1&navpanes=0`}
+                  className="w-full h-full border-0"
+                  title={preview.titleEn}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

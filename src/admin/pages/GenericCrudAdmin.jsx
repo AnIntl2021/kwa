@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
+import RichEditor from '../components/RichEditor';
 
 const GenericCrudAdmin = ({
   title,
@@ -84,9 +85,11 @@ const GenericCrudAdmin = ({
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {fields.map(field => (
-                  <div key={field.key} className={field.fullWidth ? 'md:col-span-2' : ''}>
+                  <div key={field.key} className={field.fullWidth || field.rich ? 'md:col-span-2' : ''}>
                     <label className="block text-xs font-medium text-gray-600 mb-1">{field.label}</label>
-                    {field.type === 'select' ? (
+                    {field.rich ? (
+                      <RichEditor key={`${form._id || 'new'}-${field.key}`} value={form[field.key] || ''} onChange={v => setForm(p => ({ ...p, [field.key]: v }))} dir={field.dir} />
+                    ) : field.type === 'select' ? (
                       <select value={form[field.key] || ''} onChange={e => setForm(p => ({ ...p, [field.key]: e.target.value }))}
                         className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400">
                         {field.options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}

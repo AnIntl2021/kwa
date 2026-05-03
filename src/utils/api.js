@@ -110,6 +110,21 @@ export const adminApi = {
   markAllRead: () => api.patch('/admin/submissions/mark-all-read'),
   deleteSubmission: (id) => api.delete(`/admin/submissions/${id}`),
   deleteSubmissions: (type) => api.delete(`/admin/submissions${type ? `?type=${type}` : ''}`),
+
+  // Custom Forms
+  getCustomForms: () => api.get('/admin/custom-forms'),
+  createCustomForm: (data) => api.post('/admin/custom-forms', data),
+  updateCustomForm: (id, data) => api.put(`/admin/custom-forms/${id}`, data),
+  deleteCustomForm: (id) => api.delete(`/admin/custom-forms/${id}`),
+  getCustomFormSubmissions: (id) => api.get(`/admin/custom-forms/${id}/submissions`),
+  markCustomFormSubmissionRead: (subId) => api.patch(`/admin/form-submissions/${subId}/read`),
+  deleteCustomFormSubmission: (subId) => api.delete(`/admin/form-submissions/${subId}`),
+};
+
+// Public custom form helpers (no auth)
+export const publicFormApi = {
+  getForm: (slug) => api.get(`/public/forms/${slug}`),
+  submit: (slug, data) => api.post(`/public/forms/${slug}/submit`, data),
 };
 
 export default api;

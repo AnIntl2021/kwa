@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../utils/api';
 import ImageUpload from '../components/ImageUpload';
+import RichEditor from '../components/RichEditor';
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Calendar } from 'lucide-react';
 
 const empty = { titleAr: '', titleEn: '', descriptionAr: '', descriptionEn: '', date: '', locationAr: '', locationEn: '', image: '', isActive: true };
@@ -63,12 +64,18 @@ const EventsAdmin = () => {
               <div className="grid grid-cols-2 gap-4">
                 <F label="Title (Arabic)" value={form.titleAr} onChange={v => setForm(p => ({ ...p, titleAr: v }))} dir="rtl" />
                 <F label="Title (English)" value={form.titleEn} onChange={v => setForm(p => ({ ...p, titleEn: v }))} />
-                <F label="Description (Arabic)" value={form.descriptionAr} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" textarea />
-                <F label="Description (English)" value={form.descriptionEn} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} textarea />
                 <F label="Date" type="date" value={toInput(form.date)} onChange={v => setForm(p => ({ ...p, date: v }))} />
                 <div />
                 <F label="Location (Arabic)" value={form.locationAr} onChange={v => setForm(p => ({ ...p, locationAr: v }))} dir="rtl" />
                 <F label="Location (English)" value={form.locationEn} onChange={v => setForm(p => ({ ...p, locationEn: v }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (Arabic)</label>
+                <RichEditor key={`${form._id || 'new'}-descAr`} value={form.descriptionAr || ''} onChange={v => setForm(p => ({ ...p, descriptionAr: v }))} dir="rtl" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Description (English)</label>
+                <RichEditor key={`${form._id || 'new'}-descEn`} value={form.descriptionEn || ''} onChange={v => setForm(p => ({ ...p, descriptionEn: v }))} dir="ltr" />
               </div>
               <ImageUpload label="Event Image" value={form.image} onChange={v => setForm(p => ({ ...p, image: v }))} folder="kwa/events" />
               <label className="flex items-center gap-2 cursor-pointer">

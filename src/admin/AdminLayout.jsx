@@ -5,23 +5,24 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   Droplets, LayoutDashboard, Image, Users, Trophy, Calendar,
   FileText, Settings, LogOut, Menu, Globe2, Handshake, GraduationCap,
-  FolderOpen, Star, ChevronRight, MessageSquare
+  FolderOpen, Star, ChevronRight, MessageSquare, ClipboardList
 } from 'lucide-react';
 
 const navItems = [
-  { path: '/admin/dashboard',    en: 'Dashboard',     ar: 'لوحة التحكم',    icon: LayoutDashboard },
-  { path: '/admin/site-config',  en: 'Hero & About',  ar: 'الرئيسية و نبذة', icon: Settings },
-  { path: '/admin/projects',     en: 'Projects',      ar: 'المشاريع',        icon: FolderOpen },
-  { path: '/admin/training',     en: 'Training',      ar: 'التدريب',         icon: GraduationCap },
-  { path: '/admin/awards',       en: 'Awards',        ar: 'الجوائز',         icon: Trophy },
-  { path: '/admin/memberships',  en: 'Memberships',   ar: 'العضويات',        icon: Star },
-  { path: '/admin/partners',     en: 'Partners',      ar: 'الشركاء',         icon: Handshake },
-  { path: '/admin/team',         en: 'Team',          ar: 'الفريق',          icon: Users },
-  { path: '/admin/events',       en: 'Events',        ar: 'الفعاليات',       icon: Calendar },
-  { path: '/admin/publications', en: 'Publications',  ar: 'المنشورات',       icon: FileText },
-  { path: '/admin/gallery',      en: 'Gallery',       ar: 'المعرض',          icon: Image },
-  { path: '/admin/submissions',  en: 'Submissions',   ar: 'الرسائل',         icon: MessageSquare },
-  { path: '/admin/settings',     en: 'Site Settings', ar: 'إعدادات الموقع',  icon: Globe2 },
+  { path: '/admin/dashboard',     en: 'Dashboard',     ar: 'لوحة التحكم',     icon: LayoutDashboard },
+  { path: '/admin/site-config',   en: 'Hero & About',  ar: 'الرئيسية و نبذة',  icon: Settings },
+  { path: '/admin/projects',      en: 'Projects',      ar: 'المشاريع',         icon: FolderOpen },
+  { path: '/admin/training',      en: 'Training',      ar: 'التدريب',          icon: GraduationCap },
+  { path: '/admin/awards',        en: 'Awards',        ar: 'الجوائز',          icon: Trophy },
+  { path: '/admin/memberships',   en: 'Memberships',   ar: 'العضويات',         icon: Star },
+  { path: '/admin/partners',      en: 'Partners',      ar: 'الشركاء',          icon: Handshake },
+  { path: '/admin/team',          en: 'Team',          ar: 'الفريق',           icon: Users },
+  { path: '/admin/events',        en: 'Events',        ar: 'الفعاليات',        icon: Calendar },
+  { path: '/admin/publications',  en: 'Publications',  ar: 'المنشورات',        icon: FileText },
+  { path: '/admin/gallery',       en: 'Gallery',       ar: 'المعرض',           icon: Image },
+  { path: '/admin/custom-forms',  en: 'Custom Forms',  ar: 'نماذج مخصصة',     icon: ClipboardList },
+  { path: '/admin/submissions',   en: 'Submissions',   ar: 'الرسائل',          icon: MessageSquare },
+  { path: '/admin/settings',      en: 'Site Settings', ar: 'إعدادات الموقع',   icon: Globe2 },
 ];
 
 const AdminLayout = () => {

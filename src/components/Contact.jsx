@@ -11,18 +11,20 @@ export const Contact = () => {
   const { lang, str } = useLanguage();
   const [config, setConfig] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [form, setForm] = useState({ name: '', email: '', phone: '', landline: '', message: '' });
+  const emptyForm = { firstName: '', middleName: '', lastName: '', designation: '', company: '', email: '', phone: '', landline: '', message: '' };
+  const [form, setForm] = useState(emptyForm);
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState('');
+  const f = (k) => (v) => setForm(p => ({ ...p, [k]: v }));
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) { setMsg(str('الاسم والبريد مطلوبان', 'Name and email are required')); return; }
+    if (!form.firstName || !form.email) { setMsg(str('الاسم الأول والبريد مطلوبان', 'First name and email are required')); return; }
     setSending(true);
     try {
       await publicApi.submitContact(form);
       setMsg(str('تم إرسال رسالتك بنجاح!', 'Message sent successfully!'));
-      setForm({ name: '', email: '', phone: '', landline: '', message: '' });
+      setForm(emptyForm);
     } catch {
       setMsg(str('حدث خطأ، حاول مرة أخرى', 'Something went wrong, try again'));
     } finally {
@@ -110,43 +112,40 @@ export const Contact = () => {
                     </span>
                   </h3>
                   <form onSubmit={handleSend} className="space-y-4">
-                    <div>
-                      <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('الاسم الكامل', 'Full Name')} *</label>
-                      <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                        placeholder={str('أدخل اسمك', 'Enter your name')} dir={lang === 'ar' ? 'rtl' : 'ltr'}
-                        className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+                    {/* Name row */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <TF label={str('الاسم الأول', 'First Name') + ' *'} value={form.firstName} onChange={f('firstName')} lang={lang} />
+                      <TF label={str('الاسم الأوسط', 'Middle Name')} value={form.middleName} onChange={f('middleName')} lang={lang} />
+                      <TF label={str('اسم العائلة', 'Last Name')} value={form.lastName} onChange={f('lastName')} lang={lang} />
                     </div>
+                    {/* Professional */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <TF label={str('المسمى الوظيفي', 'Designation')} value={form.designation} onChange={f('designation')} lang={lang} />
+                      <TF label={str('الشركة / الجهة', 'Company')} value={form.company} onChange={f('company')} lang={lang} />
+                    </div>
+                    {/* Email */}
                     <div>
                       <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('البريد الإلكتروني', 'Email')} *</label>
-                      <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                      <input type="email" value={form.email} onChange={e => f('email')(e.target.value)}
                         placeholder="example@domain.com" dir="ltr"
                         className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
                     </div>
-                    <PhoneInput
-                      label={str('رقم الجوال', 'Mobile Phone')}
-                      value={form.phone}
-                      onChange={v => setForm(p => ({ ...p, phone: v }))}
-                    />
+                    <PhoneInput label={str('رقم الجوال', 'Mobile Phone')} value={form.phone} onChange={f('phone')} />
                     <div>
                       <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
                         {str('رقم الهاتف الأرضي', 'Landline Number')}
                       </label>
-                      <div className="flex gap-0" dir="ltr">
-                        <span className="flex items-center px-3 h-[42px] border-2 border-r-0 border-gray-200 rounded-l-xl bg-gray-50 text-gray-500 text-sm font-medium whitespace-nowrap">
-                          📞
-                        </span>
-                        <input
-                          type="tel"
-                          value={form.landline}
-                          onChange={e => setForm(p => ({ ...p, landline: e.target.value.replace(/[^0-9\s\-+]/g, '') }))}
+                      <div className="flex" dir="ltr">
+                        <span className="flex items-center px-3 h-[42px] border-2 border-r-0 border-gray-200 rounded-l-xl bg-gray-50 text-gray-500 text-sm">📞</span>
+                        <input type="tel" value={form.landline}
+                          onChange={e => f('landline')(e.target.value.replace(/[^0-9\s\-+]/g, ''))}
                           placeholder="e.g. +965 2200 0000"
-                          className="flex-1 px-3 h-[42px] border-2 border-gray-200 rounded-r-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm"
-                        />
+                          className="flex-1 px-3 h-[42px] border-2 border-gray-200 rounded-r-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
                       </div>
                     </div>
                     <div>
                       <label className={`block text-sm font-medium text-gray-700 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{str('الرسالة', 'Message')}</label>
-                      <textarea rows={4} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                      <textarea rows={3} value={form.message} onChange={e => f('message')(e.target.value)}
                         placeholder={str('اكتب رسالتك هنا...', 'Write your message here...')} dir={lang === 'ar' ? 'rtl' : 'ltr'}
                         className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm resize-none" />
                     </div>
@@ -166,3 +165,11 @@ export const Contact = () => {
     </section>
   );
 };
+
+const TF = ({ label, value, onChange, lang }) => (
+  <div>
+    <label className={`block text-xs font-medium text-gray-600 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{label}</label>
+    <input value={value} onChange={e => onChange(e.target.value)} dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:border-cyan-400 focus:outline-none transition-colors text-sm" />
+  </div>
+);

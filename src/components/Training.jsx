@@ -21,9 +21,11 @@ export const Training = () => {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const emptyForm = { firstName: '', middleName: '', lastName: '', designation: '', company: '', email: '', phone: '', message: '' };
+  const [formData, setFormData] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState('');
+  const fd = (k) => (v) => setFormData(p => ({ ...p, [k]: v }));
 
   useEffect(() => {
     publicApi.getTraining()
@@ -39,13 +41,13 @@ export const Training = () => {
 
   const handleInterestedClick = (title) => {
     setSelectedTraining(title);
-    setFormData({ name: '', email: '', phone: '', message: '' });
+    setFormData(emptyForm);
     setSubmitMsg('');
     setIsOpen(true);
   };
 
   const handleSubmit = async () => {
-    if (!formData.email) { setSubmitMsg(str('البريد الإلكتروني مطلوب', 'Email is required')); return; }
+    if (!formData.firstName || !formData.email) { setSubmitMsg(str('الاسم الأول والبريد مطلوبان', 'First name and email are required')); return; }
     setSubmitting(true);
     try {
       await publicApi.submitTraining({ ...formData, trainingName: selectedTraining });
@@ -146,32 +148,33 @@ export const Training = () => {
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[500px] text-right" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
           <DialogHeader>
             <DialogTitle className="text-2xl text-cyan-600">{str('طلب اهتمام بالتدريب', 'Training Interest Request')}</DialogTitle>
             <DialogDescription className="text-gray-500">
               {str('أنت مهتم ببرنامج:', 'You are interested in:')} <span className="font-bold text-gray-700">{selectedTraining}</span>
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label>{str('الاسم الكامل', 'Full Name')}</Label>
-              <Input value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} placeholder={str('أدخل اسمك الكامل', 'Enter your full name')} />
+          <div className="grid gap-3 py-4">
+            {/* Name */}
+            <div className="grid grid-cols-3 gap-2">
+              <TFL label={str('الاسم الأول', 'First Name') + ' *'} value={formData.firstName} onChange={fd('firstName')} lang={lang} />
+              <TFL label={str('الاسم الأوسط', 'Middle Name')} value={formData.middleName} onChange={fd('middleName')} lang={lang} />
+              <TFL label={str('اسم العائلة', 'Last Name')} value={formData.lastName} onChange={fd('lastName')} lang={lang} />
             </div>
-            <div className="space-y-2">
+            {/* Professional */}
+            <div className="grid grid-cols-2 gap-2">
+              <TFL label={str('المسمى الوظيفي', 'Designation')} value={formData.designation} onChange={fd('designation')} lang={lang} />
+              <TFL label={str('الشركة / الجهة', 'Company')} value={formData.company} onChange={fd('company')} lang={lang} />
+            </div>
+            <div className="space-y-1">
               <Label>{str('البريد الإلكتروني', 'Email')} *</Label>
-              <Input type="email" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} placeholder="example@domain.com" />
+              <Input type="email" value={formData.email} onChange={e => fd('email')(e.target.value)} placeholder="example@domain.com" dir="ltr" />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <PhoneInput
-                label={str('رقم التواصل', 'Phone')}
-                value={formData.phone}
-                onChange={v => setFormData(p => ({ ...p, phone: v }))}
-              />
-            </div>
-            <div className="space-y-2">
+            <PhoneInput label={str('رقم التواصل', 'Phone')} value={formData.phone} onChange={fd('phone')} />
+            <div className="space-y-1">
               <Label>{str('رسالة إضافية', 'Additional Message')}</Label>
-              <Textarea value={formData.message} onChange={e => setFormData(p => ({ ...p, message: e.target.value }))} placeholder={str('اكتب استفسارك هنا...', 'Write your inquiry here...')} className="min-h-[80px]" />
+              <Textarea value={formData.message} onChange={e => fd('message')(e.target.value)} placeholder={str('اكتب استفسارك هنا...', 'Write your inquiry here...')} className="min-h-[70px]" />
             </div>
             {submitMsg && <p className={`text-sm text-center font-medium ${submitMsg.includes('نجاح') || submitMsg.includes('success') ? 'text-green-600' : 'text-red-500'}`}>{submitMsg}</p>}
           </div>
@@ -185,3 +188,11 @@ export const Training = () => {
     </section>
   );
 };
+
+const TFL = ({ label, value, onChange, lang }) => (
+  <div>
+    <label className={`block text-xs font-medium text-gray-600 mb-1 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{label}</label>
+    <input value={value} onChange={e => onChange(e.target.value)} dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" />
+  </div>
+);

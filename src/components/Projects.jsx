@@ -11,12 +11,16 @@ export const Projects = () => {
   const { lang, str } = useLanguage();
   const [projects, setProjects] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [youthForum, setYouthForum] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
 
   useEffect(() => {
     publicApi.getProjects()
       .then(res => setProjects(res.data.data || []))
       .catch(() => setProjects([]));
+    publicApi.getSiteConfig()
+      .then(res => setYouthForum(res.data.data?.youthForum || null))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -28,8 +32,13 @@ export const Projects = () => {
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
   const itemVariants = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 
-  const truncate = (text, max = 110) => {
-    if (!text) return '';
+  const stripHtml = (html) => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  };
+
+  const truncate = (html, max = 110) => {
+    const text = stripHtml(html);
     return text.length > max ? text.slice(0, max).trimEnd() + '…' : text;
   };
 
@@ -141,7 +150,7 @@ export const Projects = () => {
                       ))}
                     </div>
                   )}
-                  <p className={`text-gray-600 leading-relaxed whitespace-pre-line ${lang === 'ar' ? 'text-right' : 'text-left'}`}>{desc}</p>
+                  <div className={`text-gray-600 leading-relaxed rich-content ${lang === 'ar' ? 'text-right' : 'text-left'}`} dangerouslySetInnerHTML={{ __html: desc || '' }} />
                 </div>
               </motion.div>
             </motion.div>
@@ -150,24 +159,37 @@ export const Projects = () => {
       </AnimatePresence>
 
       {/* Youth Forum CTA */}
-      <section className="section-padding relative overflow-hidden bg-blue-50">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 flex items-center justify-center">
-          <div className="text-center text-white p-8">
-            <h3 className="text-4xl font-bold mb-4">{str('هل أنت مستعد لتكون جزءاً من التغيير؟', 'Ready to Be Part of the Change?')}</h3>
-            <p className="text-xl mb-6 opacity-90">
-              {str('ندعو جميع الشباب المبدعين للانضمام إلينا في الملتقى الشبابي الكويتي العربي الخامس.', 'We invite all creative youth to join us at the 5th Kuwaiti-Arab Youth Forum.')}
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/youthForum.html'}
-              className="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
-            >
-              {str('سجل الآن وانضم إلينا', 'Register Now & Join Us')}
-            </motion.button>
+      {youthForum?.isVisible !== false && (
+        <section className="section-padding relative overflow-hidden bg-blue-50">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 flex items-center justify-center">
+            <div className="text-center text-white p-8 py-10 max-w-3xl mx-auto" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+              <h3 className="text-4xl font-bold mb-4">
+                {lang === 'ar' ? (youthForum?.titleAr || str('هل أنت مستعد لتكون جزءاً من التغيير؟', 'Ready to Be Part of the Change?')) : (youthForum?.titleEn || str('هل أنت مستعد لتكون جزءاً من التغيير؟', 'Ready to Be Part of the Change?'))}
+              </h3>
+              {(lang === 'ar' ? youthForum?.descriptionTopAr : youthForum?.descriptionTopEn) && (
+                <div
+                  className="text-xl mb-6 opacity-90 rich-content"
+                  dangerouslySetInnerHTML={{ __html: lang === 'ar' ? youthForum.descriptionTopAr : youthForum.descriptionTopEn }}
+                />
+              )}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = youthForum?.buttonLink || '/youthForum.html'}
+                className="bg-white text-primary px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
+              >
+                {lang === 'ar' ? (youthForum?.buttonTextAr || str('سجل الآن وانضم إلينا', 'Register Now & Join Us')) : (youthForum?.buttonTextEn || str('سجل الآن وانضم إلينا', 'Register Now & Join Us'))}
+              </motion.button>
+              {(lang === 'ar' ? youthForum?.descriptionBotAr : youthForum?.descriptionBotEn) && (
+                <div
+                  className="text-lg mt-6 opacity-80 rich-content"
+                  dangerouslySetInnerHTML={{ __html: lang === 'ar' ? youthForum.descriptionBotAr : youthForum.descriptionBotEn }}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 };

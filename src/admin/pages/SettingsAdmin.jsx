@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Eye, EyeOff, KeyRound } from 'lucide-react';
 import { adminApi } from '../../utils/api';
 import api from '../../utils/api';
+import RichEditor from '../components/RichEditor';
 
 const SettingsAdmin = () => {
   const [config, setConfig] = useState(null);
@@ -110,8 +111,14 @@ const SettingsAdmin = () => {
           <h2 className="font-semibold text-gray-700 mb-1">Privacy Policy</h2>
           <p className="text-xs text-gray-400 mb-4">Shown at <span className="font-mono">/privacy-policy</span></p>
           <div className="space-y-4">
-            <F label="Privacy Policy (Arabic)" value={config.privacyPolicyAr} onChange={v => update('privacyPolicyAr', v)} dir="rtl" textarea rows={10} />
-            <F label="Privacy Policy (English)" value={config.privacyPolicyEn} onChange={v => update('privacyPolicyEn', v)} textarea rows={10} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Privacy Policy (Arabic)</label>
+              <RichEditor value={config.privacyPolicyAr || ''} onChange={v => update('privacyPolicyAr', v)} dir="rtl" minHeight={200} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Privacy Policy (English)</label>
+              <RichEditor value={config.privacyPolicyEn || ''} onChange={v => update('privacyPolicyEn', v)} minHeight={200} />
+            </div>
           </div>
         </section>
 
@@ -120,8 +127,14 @@ const SettingsAdmin = () => {
           <h2 className="font-semibold text-gray-700 mb-1">Terms of Use</h2>
           <p className="text-xs text-gray-400 mb-4">Shown at <span className="font-mono">/terms</span></p>
           <div className="space-y-4">
-            <F label="Terms of Use (Arabic)" value={config.termsAr} onChange={v => update('termsAr', v)} dir="rtl" textarea rows={10} />
-            <F label="Terms of Use (English)" value={config.termsEn} onChange={v => update('termsEn', v)} textarea rows={10} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Terms of Use (Arabic)</label>
+              <RichEditor value={config.termsAr || ''} onChange={v => update('termsAr', v)} dir="rtl" minHeight={200} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Terms of Use (English)</label>
+              <RichEditor value={config.termsEn || ''} onChange={v => update('termsEn', v)} minHeight={200} />
+            </div>
           </div>
         </section>
       </div>

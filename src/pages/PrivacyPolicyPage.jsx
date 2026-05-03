@@ -44,11 +44,9 @@ const PrivacyPolicyPage = () => {
             <div className="flex justify-center py-16"><div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" /></div>
           ) : content ? (
             <div
-              className={`bg-white rounded-2xl p-8 shadow-sm border border-gray-100 prose prose-cyan max-w-none leading-relaxed text-gray-700 ${lang === 'ar' ? 'text-right' : 'text-left'}`}
-              style={{ whiteSpace: 'pre-wrap' }}
-            >
-              {content}
-            </div>
+              className={`bg-white rounded-2xl p-8 shadow-sm border border-gray-100 rich-content leading-relaxed text-gray-700 ${lang === 'ar' ? 'text-right' : 'text-left'}`}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
           ) : (
             <div className="text-center py-20 text-gray-400">
               <ShieldCheck className="w-12 h-12 mx-auto mb-3 opacity-30" />
