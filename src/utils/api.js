@@ -29,6 +29,7 @@ export const publicApi = {
   getEvents: () => api.get('/public/events'),
   getPublications: () => api.get('/public/publications'),
   getGallery: () => api.get('/public/gallery'),
+  getCertificates: () => api.get('/public/certificates'),
   // Form submissions
   submitTraining: (data) => api.post('/public/submit/training', data),
   submitContact: (data) => api.post('/public/submit/contact', data),
@@ -110,6 +111,12 @@ export const adminApi = {
   markAllRead: () => api.patch('/admin/submissions/mark-all-read'),
   deleteSubmission: (id) => api.delete(`/admin/submissions/${id}`),
   deleteSubmissions: (type) => api.delete(`/admin/submissions${type ? `?type=${type}` : ''}`),
+
+  // Certificates
+  getCertificates: () => api.get('/admin/certificates'),
+  createCertificate: (data) => api.post('/admin/certificates', data),
+  updateCertificate: (id, data) => api.put(`/admin/certificates/${id}`, data),
+  deleteCertificate: (id) => api.delete(`/admin/certificates/${id}`),
 
   // Custom Forms
   getCustomForms: () => api.get('/admin/custom-forms'),

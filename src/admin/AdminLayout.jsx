@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import {
   Droplets, LayoutDashboard, Image, Users, Trophy, Calendar,
   FileText, Settings, LogOut, Menu, Globe2, Handshake, GraduationCap,
-  FolderOpen, Star, ChevronRight, MessageSquare, ClipboardList
+  FolderOpen, Star, ChevronRight, MessageSquare, ClipboardList, Award
 } from 'lucide-react';
 
 const navItems = [
@@ -20,6 +20,7 @@ const navItems = [
   { path: '/admin/events',        en: 'Events',        ar: 'الفعاليات',        icon: Calendar },
   { path: '/admin/publications',  en: 'Publications',  ar: 'المنشورات',        icon: FileText },
   { path: '/admin/gallery',       en: 'Gallery',       ar: 'المعرض',           icon: Image },
+  { path: '/admin/certificates',  en: 'Certificates',  ar: 'الشهادات',         icon: Award },
   { path: '/admin/custom-forms',  en: 'Custom Forms',  ar: 'نماذج مخصصة',     icon: ClipboardList },
   { path: '/admin/submissions',   en: 'Submissions',   ar: 'الرسائل',          icon: MessageSquare },
   { path: '/admin/settings',      en: 'Site Settings', ar: 'إعدادات الموقع',   icon: Globe2 },

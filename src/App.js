@@ -16,6 +16,7 @@ import { Training } from "./components/Training";
 import { Awards } from "./components/Awards";
 import { Partnerships } from "./components/Partnerships";
 import Gallery from "./components/Gallery";
+import { Certificates } from "./components/Certificates";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 
@@ -41,6 +42,7 @@ import PublicationsAdmin from "./admin/pages/PublicationsAdmin";
 import GalleryAdmin from "./admin/pages/GalleryAdmin";
 import SubmissionsAdmin from "./admin/pages/SubmissionsAdmin";
 import CustomFormsAdmin from "./admin/pages/CustomFormsAdmin";
+import CertificatesAdmin from "./admin/pages/CertificatesAdmin";
 import SettingsAdmin from "./admin/pages/SettingsAdmin";
 import CustomFormPage from "./pages/CustomFormPage";
 
@@ -56,6 +58,7 @@ const Home = () => (
       <Training />
       <Awards />
       <Partnerships />
+      <Certificates />
       <Gallery />
       <Contact />
     </main>
@@ -109,6 +112,7 @@ function App() {
                 <Route path="publications" element={<PublicationsAdmin />} />
                 <Route path="gallery" element={<GalleryAdmin />} />
                 <Route path="submissions" element={<SubmissionsAdmin />} />
+                <Route path="certificates" element={<CertificatesAdmin />} />
                 <Route path="custom-forms" element={<CustomFormsAdmin />} />
                 <Route path="settings" element={<SettingsAdmin />} />
               </Route>
