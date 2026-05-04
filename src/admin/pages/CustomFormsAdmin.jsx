@@ -10,11 +10,13 @@ const FIELD_TYPES = [
   { value: 'phone',    label: 'Phone' },
   { value: 'number',   label: 'Number' },
   { value: 'date',     label: 'Date' },
+  { value: 'file',     label: 'File Upload' },
   { value: 'select',   label: 'Dropdown' },
   { value: 'radio',    label: 'Radio Buttons' },
 ];
 
 const HAS_OPTIONS = ['select', 'radio'];
+const HAS_PLACEHOLDER = ['text', 'textarea', 'email', 'phone', 'number'];
 
 const toSlug = (s) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
@@ -74,10 +76,17 @@ const FieldEditor = ({ field, idx, onUpdate, onRemove, onAddOption, onUpdateOpti
             <SF label="Label (Arabic)" value={field.labelAr} onChange={v => onUpdate(idx, 'labelAr', v)} dir="rtl" />
           </div>
 
-          {!hasOpts && (
+          {HAS_PLACEHOLDER.includes(field.type) && (
             <div className="grid grid-cols-2 gap-3">
               <SF label="Placeholder (EN)" value={field.placeholderEn} onChange={v => onUpdate(idx, 'placeholderEn', v)} />
               <SF label="Placeholder (AR)" value={field.placeholderAr} onChange={v => onUpdate(idx, 'placeholderAr', v)} dir="rtl" />
+            </div>
+          )}
+
+          {field.type === 'file' && (
+            <div>
+              <SF label='Accepted file types (e.g. image/*, application/pdf, .docx — leave blank for any)'
+                value={field.accept || ''} onChange={v => onUpdate(idx, 'accept', v)} />
             </div>
           )}
 
@@ -175,7 +184,7 @@ const CustomFormsAdmin = () => {
   // Field helpers
   const addField = () => {
     const id = `f_${Date.now()}`;
-    setEditing(e => ({ ...e, fields: [...e.fields, { id, type: 'text', labelEn: '', labelAr: '', placeholderEn: '', placeholderAr: '', required: false, options: [] }] }));
+    setEditing(e => ({ ...e, fields: [...e.fields, { id, type: 'text', labelEn: '', labelAr: '', placeholderEn: '', placeholderAr: '', required: false, accept: '', options: [] }] }));
   };
   const updField = (idx, key, val) => setEditing(e => {
     const fields = [...e.fields]; fields[idx] = { ...fields[idx], [key]: val }; return { ...e, fields };
@@ -249,9 +258,6 @@ const CustomFormsAdmin = () => {
               </button>
               <button onClick={() => openBuilder(form)} className="p-1.5 hover:bg-cyan-50 rounded-lg">
                 <Pencil className="w-4 h-4 text-cyan-600" />
-              </button>
-              <button onClick={() => deleteForm(form._id)} className="p-1.5 hover:bg-red-50 rounded-lg">
-                <Trash2 className="w-4 h-4 text-red-500" />
               </button>
             </div>
           </div>

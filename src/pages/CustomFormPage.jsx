@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { publicFormApi } from '../utils/api';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Paperclip, X } from 'lucide-react';
+import axios from 'axios';
 
 const CustomFormPage = () => {
   const { slug } = useParams();
@@ -15,6 +16,8 @@ const CustomFormPage = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [values, setValues] = useState({});
+  const [fileValues, setFileValues] = useState({});   // id → File object
+  const [uploadProgress, setUploadProgress] = useState({});  // id → 0-100
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -24,6 +27,8 @@ const CustomFormPage = () => {
     setNotFound(false);
     setSubmitted(false);
     setValues({});
+    setFileValues({});
+    setUploadProgress({});
     publicFormApi.getForm(slug)
       .then(res => { setForm(res.data.data); setLoading(false); })
       .catch(() => { setNotFound(true); setLoading(false); });
@@ -33,7 +38,11 @@ const CustomFormPage = () => {
     e.preventDefault();
     setError('');
 
-    const missing = form.fields.filter(f => f.required && !values[f.id]);
+    const missing = form.fields.filter(f => {
+      if (!f.required) return false;
+      if (f.type === 'file') return !fileValues[f.id] && !values[f.id];
+      return !values[f.id];
+    });
     if (missing.length > 0) {
       setError(isAr ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill in all required fields.');
       return;
@@ -41,16 +50,35 @@ const CustomFormPage = () => {
 
     setSubmitting(true);
     try {
-      await publicFormApi.submit(slug, values);
+      const finalValues = { ...values };
+
+      // Upload any pending file fields first
+      const fileFields = form.fields.filter(f => f.type === 'file' && fileValues[f.id]);
+      for (const field of fileFields) {
+        const file = fileValues[field.id];
+        setUploadProgress(p => ({ ...p, [field.id]: 0 }));
+        const res = await publicFormApi.getUploadUrl(file.name, file.type);
+        const { signedUrl, publicUrl } = res.data;
+        await axios.put(signedUrl, file, {
+          headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
+          onUploadProgress: (ev) =>
+            setUploadProgress(p => ({ ...p, [field.id]: Math.round((ev.loaded / ev.total) * 100) })),
+        });
+        finalValues[field.id] = publicUrl;
+      }
+
+      await publicFormApi.submit(slug, finalValues);
       setSubmitted(true);
     } catch {
       setError(isAr ? 'حدث خطأ، يرجى المحاولة مرة أخرى' : 'Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
+      setUploadProgress({});
     }
   };
 
   const set = (id, v) => setValues(s => ({ ...s, [id]: v }));
+  const setFile = (id, file) => setFileValues(s => ({ ...s, [id]: file }));
 
   const renderField = (field) => {
     const ph = isAr ? field.placeholderAr : field.placeholderEn;
@@ -58,6 +86,8 @@ const CustomFormPage = () => {
     const base = 'w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors';
 
     switch (field.type) {
+      case 'file':
+        return <FileField field={field} fileValues={fileValues} uploadProgress={uploadProgress} setFile={setFile} isAr={isAr} />;
       case 'textarea':
         return (
           <textarea value={val} onChange={e => set(field.id, e.target.value)}
@@ -187,6 +217,59 @@ const CustomFormPage = () => {
         </div>
       </main>
       <Footer />
+    </div>
+  );
+};
+
+const FileField = ({ field, fileValues, uploadProgress, setFile, isAr }) => {
+  const fileRef = useRef();
+  const file = fileValues[field.id];
+  const progress = uploadProgress[field.id];
+
+  return (
+    <div>
+      {file ? (
+        <div className="flex items-center gap-3 px-4 py-3 border-2 border-cyan-300 bg-cyan-50 rounded-xl">
+          <Paperclip className="w-4 h-4 text-cyan-500 flex-shrink-0" />
+          <span className="flex-1 text-sm text-gray-700 truncate">{file.name}</span>
+          <span className="text-xs text-gray-400 flex-shrink-0">
+            {(file.size / 1024 / 1024).toFixed(1)} MB
+          </span>
+          {progress !== undefined ? (
+            <span className="text-xs text-cyan-600 font-medium flex-shrink-0">{progress}%</span>
+          ) : (
+            <button type="button" onClick={() => setFile(field.id, null)}
+              className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-100 flex-shrink-0 transition-colors">
+              <X className="w-3.5 h-3.5 text-gray-500 hover:text-red-500" />
+            </button>
+          )}
+        </div>
+      ) : (
+        <div
+          onClick={() => fileRef.current?.click()}
+          className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-cyan-400 hover:bg-cyan-50 transition-all"
+        >
+          <Paperclip className="w-4 h-4 text-gray-400" />
+          <span className="text-sm text-gray-500">
+            {isAr ? 'انقر لاختيار ملف' : 'Click to choose a file'}
+          </span>
+          {field.accept && (
+            <span className="ms-auto text-xs text-gray-400">{field.accept}</span>
+          )}
+        </div>
+      )}
+      <input
+        ref={fileRef}
+        type="file"
+        accept={field.accept || undefined}
+        className="hidden"
+        onChange={e => setFile(field.id, e.target.files[0] || null)}
+      />
+      {progress !== undefined && (
+        <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+          <div className="bg-cyan-500 h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+      )}
     </div>
   );
 };

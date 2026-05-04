@@ -132,6 +132,8 @@ export const adminApi = {
 export const publicFormApi = {
   getForm: (slug) => api.get(`/public/forms/${slug}`),
   submit: (slug, data) => api.post(`/public/forms/${slug}/submit`, data),
+  getUploadUrl: (filename, contentType) =>
+    api.get(`/public/form-upload-url?filename=${encodeURIComponent(filename)}&contentType=${encodeURIComponent(contentType)}`),
 };
 
 export default api;
