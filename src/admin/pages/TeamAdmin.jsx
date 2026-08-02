@@ -105,6 +105,7 @@ const TeamAdmin = () => {
                 {item.isChairman && <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />}
               </div>
               <p className="text-sm text-gray-500 truncate">{item.designationEn}</p>
+              <p className="text-xs text-cyan-600 font-medium mt-0.5">Order: {item.order}</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               <button onClick={() => toggle(item)}>
