@@ -137,6 +137,7 @@ const CustomFormsAdmin = () => {
 
   const load = () => adminApi.getCustomForms().then(r => setForms(r.data.data || []));
   useEffect(() => { load(); }, []);
+  useEffect(() => { setPreviewUrl(null); }, [view]);
 
   const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
 
@@ -305,21 +306,16 @@ const CustomFormsAdmin = () => {
 
   const FileValue = ({ url }) => {
     const filename = url.split('/').pop().split('?')[0];
-    const ext = filename.split('.').pop().toLowerCase();
-    const isImage = ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext);
-    const isPdf = ext === 'pdf';
     return (
       <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
         <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <span className="flex-1 text-xs text-gray-600 truncate max-w-[200px]" title={filename}>{filename}</span>
-        {(isImage || isPdf) && (
-          <button
-            type="button"
-            onClick={() => setPreviewUrl(url)}
-            className="flex items-center gap-1 px-2 py-1 bg-cyan-50 text-cyan-600 hover:bg-cyan-100 rounded text-xs font-medium transition-colors">
-            <Eye className="w-3 h-3" /> View
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setPreviewUrl(url)}
+          className="flex items-center gap-1 px-2 py-1 bg-cyan-50 text-cyan-600 hover:bg-cyan-100 rounded text-xs font-medium transition-colors">
+          <Eye className="w-3 h-3" /> View
+        </button>
         <a href={url} download
           className="flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded text-xs font-medium transition-colors">
           <Download className="w-3 h-3" /> Download
@@ -330,8 +326,9 @@ const CustomFormsAdmin = () => {
 
   // ── SUBMISSIONS ───────────────────────────────────────────────────────────
   if (view === 'submissions') return (
-    <div>
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
+    <>
+      <div>
+        <div className="flex items-center gap-3 mb-6 flex-wrap">
         <button onClick={() => setView('list')} className="text-sm text-cyan-600 hover:text-cyan-700 font-medium">← Back</button>
         <h1 className="text-xl font-bold text-gray-800 flex-1">Submissions — {selectedForm?.titleEn}</h1>
         <span className="text-sm text-gray-400">({submissions.length})</span>
@@ -404,66 +401,60 @@ const CustomFormsAdmin = () => {
           </div>
         ))}
       </div>
+      </div>
 
-      {/* ── Inline File Preview Modal ─────────────────────────────── */}
-      {previewUrl && (() => {
-        const filename = previewUrl.split('/').pop().split('?')[0];
-        const ext = filename.split('.').pop().toLowerCase();
-        const isImage = ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext);
-        const isPdf = ext === 'pdf';
-        return (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-            onClick={() => setPreviewUrl(null)}
-          >
-            <div
-              className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
-              style={{ maxWidth: '90vw', maxHeight: '90vh', width: isPdf ? '900px' : 'auto' }}
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Modal header */}
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 bg-gray-50">
-                <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <span className="flex-1 text-sm font-medium text-gray-700 truncate">{filename}</span>
-                <a
-                  href={previewUrl}
-                  download
-                  className="flex items-center gap-1 px-3 py-1.5 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded-lg text-xs font-medium transition-colors"
-                >
+      {/* Modal Previewer */}
+      {previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <span className="text-sm font-semibold text-gray-800 truncate flex-1 pr-4">
+                {previewUrl.split('/').pop().split('?')[0]}
+              </span>
+              <div className="flex items-center gap-3">
+                <a href={previewUrl} download
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded-xl text-xs font-medium transition-colors">
                   <Download className="w-3.5 h-3.5" /> Download
                 </a>
                 <button
                   type="button"
                   onClick={() => setPreviewUrl(null)}
-                  className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                  className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors"
                 >
-                  <X className="w-4 h-4 text-gray-500" />
+                  <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
-
-              {/* Content */}
-              <div className="overflow-auto flex-1 flex items-center justify-center bg-gray-100 p-4">
-                {isImage && (
-                  <img
-                    src={previewUrl}
-                    alt={filename}
-                    className="max-w-full max-h-[75vh] object-contain rounded-lg shadow"
-                  />
-                )}
-                {isPdf && (
-                  <iframe
-                    src={previewUrl}
-                    title={filename}
-                    className="w-full rounded-lg"
-                    style={{ height: '75vh', minWidth: '800px' }}
-                  />
-                )}
-              </div>
+            </div>
+            {/* Content */}
+            <div className="flex-1 bg-gray-50 p-6 overflow-auto flex items-center justify-center min-h-[300px]">
+              {/\.(jpe?g|png|gif|webp|bmp|svg)/i.test(previewUrl) ? (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm"
+                />
+              ) : previewUrl.toLowerCase().includes('.pdf') ? (
+                <iframe
+                  src={previewUrl}
+                  title="PDF Preview"
+                  className="w-full h-[70vh] border-0 rounded-lg shadow-sm"
+                />
+              ) : (
+                <div className="text-center py-10">
+                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600 text-sm mb-4">No inline preview available for this file type.</p>
+                  <a href={previewUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-sm font-medium transition-colors">
+                    Open in New Tab
+                  </a>
+                </div>
+              )}
             </div>
           </div>
-        );
-      })()}
-    </div>
+        </div>
+      )}
+    </>
   );
 
   // ── BUILDER ───────────────────────────────────────────────────────────────
