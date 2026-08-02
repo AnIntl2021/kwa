@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../utils/api';
 import RichEditor from '../components/RichEditor';
-import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Copy, Link2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, ChevronDown, ChevronUp, Copy, Link2, FileText, Download, Eye } from 'lucide-react';
 
 const FIELD_TYPES = [
   { value: 'text',     label: 'Short Text' },
@@ -272,13 +272,68 @@ const CustomFormsAdmin = () => {
     </div>
   );
 
+  // ── SUBMISSIONS helpers ───────────────────────────────────────────────────
+  const isFileUrl = (val) => typeof val === 'string' && /^https?:\/\//i.test(val);
+
+  const exportToExcel = () => {
+    if (!selectedForm || submissions.length === 0) return;
+    const headers = selectedForm.fields.map(f => f.labelEn);
+    const rows = submissions.map(sub =>
+      selectedForm.fields.map(f => {
+        const v = sub.data?.[f.id] ?? '';
+        return String(v);
+      })
+    );
+    // Build CSV content
+    const escape = (s) => `"${String(s).replace(/"/g, '""')}"`;
+    const csv = [
+      ['Submitted At', ...headers].map(escape).join(','),
+      ...submissions.map((sub, i) =>
+        [new Date(sub.createdAt).toLocaleString(), ...rows[i]].map(escape).join(',')
+      )
+    ].join('\n');
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedForm.slug}-submissions.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const FileValue = ({ url }) => {
+    const filename = url.split('/').pop().split('?')[0];
+    return (
+      <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+        <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <span className="flex-1 text-xs text-gray-600 truncate max-w-[200px]" title={filename}>{filename}</span>
+        <a href={url} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-1 px-2 py-1 bg-cyan-50 text-cyan-600 hover:bg-cyan-100 rounded text-xs font-medium transition-colors">
+          <Eye className="w-3 h-3" /> View
+        </a>
+        <a href={url} download
+          className="flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded text-xs font-medium transition-colors">
+          <Download className="w-3 h-3" /> Download
+        </a>
+      </div>
+    );
+  };
+
   // ── SUBMISSIONS ───────────────────────────────────────────────────────────
   if (view === 'submissions') return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
         <button onClick={() => setView('list')} className="text-sm text-cyan-600 hover:text-cyan-700 font-medium">← Back</button>
-        <h1 className="text-xl font-bold text-gray-800">Submissions — {selectedForm?.titleEn}</h1>
+        <h1 className="text-xl font-bold text-gray-800 flex-1">Submissions — {selectedForm?.titleEn}</h1>
         <span className="text-sm text-gray-400">({submissions.length})</span>
+        {submissions.length > 0 && (
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-colors">
+            <Download className="w-4 h-4" /> Export Excel
+          </button>
+        )}
       </div>
 
       {submissions.length === 0 && (
@@ -317,13 +372,25 @@ const CustomFormsAdmin = () => {
             </div>
 
             {expanded === sub._id && (
-              <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-2">
-                {selectedForm?.fields.map(field => (
-                  <div key={field.id} className="flex gap-3 text-sm">
-                    <span className="font-medium text-gray-500 min-w-[140px] flex-shrink-0">{field.labelEn}:</span>
-                    <span className="text-gray-800">{String(sub.data?.[field.id] ?? '—')}</span>
-                  </div>
-                ))}
+              <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-3">
+                {selectedForm?.fields.map(field => {
+                  const val = sub.data?.[field.id];
+                  const isEmpty = val === undefined || val === null || val === '';
+                  return (
+                    <div key={field.id} className="flex gap-3 text-sm items-start">
+                      <span className="font-medium text-gray-500 min-w-[160px] flex-shrink-0 pt-0.5">{field.labelEn}:</span>
+                      <div className="flex-1">
+                        {isEmpty ? (
+                          <span className="text-gray-300">—</span>
+                        ) : isFileUrl(val) ? (
+                          <FileValue url={val} />
+                        ) : (
+                          <span className="text-gray-800 break-words">{String(val)}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
