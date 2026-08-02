@@ -133,6 +133,7 @@ const CustomFormsAdmin = () => {
   const [expanded, setExpanded] = useState(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const load = () => adminApi.getCustomForms().then(r => setForms(r.data.data || []));
   useEffect(() => { load(); }, []);
@@ -304,14 +305,21 @@ const CustomFormsAdmin = () => {
 
   const FileValue = ({ url }) => {
     const filename = url.split('/').pop().split('?')[0];
+    const ext = filename.split('.').pop().toLowerCase();
+    const isImage = ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext);
+    const isPdf = ext === 'pdf';
     return (
       <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
         <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <span className="flex-1 text-xs text-gray-600 truncate max-w-[200px]" title={filename}>{filename}</span>
-        <a href={url} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1 px-2 py-1 bg-cyan-50 text-cyan-600 hover:bg-cyan-100 rounded text-xs font-medium transition-colors">
-          <Eye className="w-3 h-3" /> View
-        </a>
+        {(isImage || isPdf) && (
+          <button
+            type="button"
+            onClick={() => setPreviewUrl(url)}
+            className="flex items-center gap-1 px-2 py-1 bg-cyan-50 text-cyan-600 hover:bg-cyan-100 rounded text-xs font-medium transition-colors">
+            <Eye className="w-3 h-3" /> View
+          </button>
+        )}
         <a href={url} download
           className="flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded text-xs font-medium transition-colors">
           <Download className="w-3 h-3" /> Download
@@ -396,6 +404,65 @@ const CustomFormsAdmin = () => {
           </div>
         ))}
       </div>
+
+      {/* ── Inline File Preview Modal ─────────────────────────────── */}
+      {previewUrl && (() => {
+        const filename = previewUrl.split('/').pop().split('?')[0];
+        const ext = filename.split('.').pop().toLowerCase();
+        const isImage = ['jpg','jpeg','png','gif','webp','bmp','svg'].includes(ext);
+        const isPdf = ext === 'pdf';
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setPreviewUrl(null)}
+          >
+            <div
+              className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+              style={{ maxWidth: '90vw', maxHeight: '90vh', width: isPdf ? '900px' : 'auto' }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Modal header */}
+              <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 bg-gray-50">
+                <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <span className="flex-1 text-sm font-medium text-gray-700 truncate">{filename}</span>
+                <a
+                  href={previewUrl}
+                  download
+                  className="flex items-center gap-1 px-3 py-1.5 bg-violet-50 text-violet-600 hover:bg-violet-100 rounded-lg text-xs font-medium transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewUrl(null)}
+                  className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="overflow-auto flex-1 flex items-center justify-center bg-gray-100 p-4">
+                {isImage && (
+                  <img
+                    src={previewUrl}
+                    alt={filename}
+                    className="max-w-full max-h-[75vh] object-contain rounded-lg shadow"
+                  />
+                )}
+                {isPdf && (
+                  <iframe
+                    src={previewUrl}
+                    title={filename}
+                    className="w-full rounded-lg"
+                    style={{ height: '75vh', minWidth: '800px' }}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 
