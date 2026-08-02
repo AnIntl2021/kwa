@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trash2, Mail, MailOpen, CheckCheck, Inbox } from 'lucide-react';
+import { Trash2, Mail, MailOpen, CheckCheck, Inbox, Download } from 'lucide-react';
 import { adminApi } from '../../utils/api';
 
 const TYPES = [
@@ -41,6 +41,35 @@ const SubmissionsAdmin = () => {
   };
 
   useEffect(() => { load(); }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const exportToExcel = () => {
+    if (items.length === 0) return;
+    const headers = ['Submitted At', 'Type', 'Name', 'Email', 'Mobile', 'Landline', 'Program / Event', 'Message'];
+    const rows = items.map(item => [
+      new Date(item.createdAt).toLocaleString(),
+      typeLabel[item.type] || item.type || '',
+      item.name || '',
+      item.email || '',
+      item.phone || '',
+      item.landline || '',
+      item.trainingName || item.eventName || '',
+      item.message || ''
+    ]);
+    const escape = (s) => `"${String(s).replace(/"/g, '""')}"`;
+    const csv = [
+      headers.map(escape).join(','),
+      ...rows.map(row => row.map(escape).join(','))
+    ].join('\n');
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const activeFilterLabel = filter ? typeLabel[filter] : 'All';
+    a.download = `${activeFilterLabel}-submissions.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const showMsg = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500); };
 
@@ -86,6 +115,11 @@ const SubmissionsAdmin = () => {
           )}
         </div>
         <div className="flex items-center gap-2">
+          {items.length > 0 && (
+            <button onClick={exportToExcel} className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">
+              <Download className="w-4 h-4" /> Export Excel
+            </button>
+          )}
           <button onClick={handleMarkAllRead} className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">
             <CheckCheck className="w-4 h-4" /> Mark all read
           </button>
