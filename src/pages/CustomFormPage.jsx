@@ -8,6 +8,7 @@ import { CheckCircle, AlertCircle, Paperclip, X } from 'lucide-react';
 import axios from 'axios';
 import PhoneInput from '../components/ui/PhoneInput';
 import { countries } from '../utils/countries';
+import CountrySelect from '../components/ui/CountrySelect';
 
 const CustomFormPage = () => {
   const { slug } = useParams();
@@ -121,29 +122,16 @@ const CustomFormPage = () => {
     const val = values[field.id] || '';
     const base = 'w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900';
 
-    // Override text fields for Nationality and Country of Residence as select dropdowns
+    // Override text fields for Nationality and Country of Residence as custom searchable dropdowns
     if (field.id === 'f_1777870749626' || field.id === 'f_1777870769147') {
       return (
-        <select 
-          value={val} 
-          onChange={e => set(field.id, e.target.value)} 
-          className={base}
-          style={{ textAlign: isAr ? 'right' : 'left' }}
-        >
-          <option value="" style={{ textAlign: isAr ? 'right' : 'left' }}>
-            {isAr ? 'اختر الدولة...' : 'Select Country...'}
-          </option>
-          {countries.map((c, i) => (
-            <option 
-              key={i} 
-              value={c.en} 
-              style={{ textAlign: isAr ? 'right' : 'left' }}
-              className="py-2 text-gray-900 bg-white"
-            >
-              {isAr ? c.ar : c.en}
-            </option>
-          ))}
-        </select>
+        <CountrySelect
+          value={val}
+          onChange={v => set(field.id, v)}
+          isAr={isAr}
+          placeholder={isAr ? 'اختر الدولة...' : 'Select Country...'}
+          countries={countries}
+        />
       );
     }
 
