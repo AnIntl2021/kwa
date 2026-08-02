@@ -19,6 +19,7 @@ api.interceptors.request.use((config) => {
 // Public data helpers (no auth required)
 export const publicApi = {
   getSiteConfig: () => api.get('/public/site-config'),
+  getActiveForm: () => api.get('/public/active-form'),
   getProjects: () => api.get('/public/projects'),
   getTraining: () => api.get('/public/training'),
   getAwards: () => api.get('/public/awards'),

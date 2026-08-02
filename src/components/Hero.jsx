@@ -61,7 +61,7 @@ export const Hero = () => {
                 {str('تواصل معنا', 'Contact Us')}
               </Button>
             </motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.8 }} className="grid grid-cols-3 gap-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.8 }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {stats.map((stat, i) => {
                 const IconComponent = iconMap[stat.icon] || Droplets;
                 const isGreen = i === 1;

@@ -36,6 +36,8 @@ export const Training = () => {
   const regular = trainings.filter(t => !t.isVirtual);
   const virtual = trainings.filter(t => t.isVirtual);
 
+  if (regular.length === 0 && virtual.length === 0) return null;
+
   const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
   const itemVariants = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 
@@ -91,7 +93,7 @@ export const Training = () => {
                             {training.attendeesCount && <Badge variant="outline" className="border-cyan-300 text-cyan-700">{training.attendeesCount}</Badge>}
                           </div>
                         </div>
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
+                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
                           <Icon className="h-7 w-7 text-white" />
                         </div>
                       </div>
@@ -117,7 +119,7 @@ export const Training = () => {
               <Card className="bg-gradient-to-br from-cyan-100 to-cyan-100 border-4 border-cyan-300 relative overflow-hidden">
                 <CardContent className="p-8 relative z-10">
                   <div className={`flex items-center gap-4 mb-6 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
-                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
+                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
                       <Laptop className="h-8 w-8 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold">
@@ -157,13 +159,13 @@ export const Training = () => {
           </DialogHeader>
           <div className="grid gap-3 py-4">
             {/* Name */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <TFL label={str('الاسم الأول', 'First Name') + ' *'} value={formData.firstName} onChange={fd('firstName')} lang={lang} />
               <TFL label={str('الاسم الأوسط', 'Middle Name')} value={formData.middleName} onChange={fd('middleName')} lang={lang} />
               <TFL label={str('اسم العائلة', 'Last Name')} value={formData.lastName} onChange={fd('lastName')} lang={lang} />
             </div>
             {/* Professional */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <TFL label={str('المسمى الوظيفي', 'Designation')} value={formData.designation} onChange={fd('designation')} lang={lang} />
               <TFL label={str('الشركة / الجهة', 'Company')} value={formData.company} onChange={fd('company')} lang={lang} />
             </div>

@@ -62,10 +62,10 @@ export const Navbar = () => {
               className="h-14 w-14 object-contain"
             />
             <div className={lang === 'ar' ? 'text-right' : 'text-left'}>
-              <h1 className="text-lg font-bold text-foreground">
+              <h1 className="text-sm sm:text-base md:text-lg font-bold text-foreground leading-tight">
                 {str('جمعية المياه الكويتية', 'Kuwait Water Association')}
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
                 {str('Kuwait Water Association', 'جمعية المياه الكويتية')}
               </p>
             </div>

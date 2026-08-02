@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -7,11 +8,16 @@ import { FolderOpen, X, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { publicApi } from '../utils/api';
 
+const YOUTH_FORUM_FORM_URL = 'https://form.jotform.com/253071808603454';
+const YOUTH_FORUM_LOGO_URL = 'https://www.jotform.com/uploads/snawara/form_files/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D9%85%D9%84%D8%AA%D9%82%D9%89_5-removebg-preview.690a30feb09ce8.57267463.png';
+
 export const Projects = () => {
   const { lang, str } = useLanguage();
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selected, setSelected] = useState(null);
   const [youthForum, setYouthForum] = useState(null);
+  const [activeForm, setActiveForm] = useState(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
 
   useEffect(() => {
@@ -20,6 +26,9 @@ export const Projects = () => {
       .catch(() => setProjects([]));
     publicApi.getSiteConfig()
       .then(res => setYouthForum(res.data.data?.youthForum || null))
+      .catch(() => {});
+    publicApi.getActiveForm()
+      .then(res => setActiveForm(res.data.data || null))
       .catch(() => {});
   }, []);
 
@@ -160,32 +169,65 @@ export const Projects = () => {
 
       {/* Youth Forum CTA */}
       {youthForum?.isVisible !== false && (
-        <section className="section-padding relative overflow-hidden bg-blue-50">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90 flex items-center justify-center">
-            <div className="text-center text-white p-8 py-10 max-w-3xl mx-auto" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-              <h3 className="text-4xl font-bold mb-4">
+        <section className="relative overflow-hidden bg-gradient-to-r from-primary/90 to-secondary/90 py-16 sm:py-20">
+          <div className="container-custom relative z-10">
+            <div className="text-center text-white max-w-3xl mx-auto px-4" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+              <img
+                src={YOUTH_FORUM_LOGO_URL}
+                alt={str('شعار الملتقى الشبابي الكويتي العربي الخامس', '5th Kuwaiti-Arab Youth Forum logo')}
+                className="w-24 h-24 md:w-28 md:h-28 object-contain mx-auto mb-5"
+              />
+              <h3 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">
                 {lang === 'ar' ? (youthForum?.titleAr || str('هل أنت مستعد لتكون جزءاً من التغيير؟', 'Ready to Be Part of the Change?')) : (youthForum?.titleEn || str('هل أنت مستعد لتكون جزءاً من التغيير؟', 'Ready to Be Part of the Change?'))}
               </h3>
               {(lang === 'ar' ? youthForum?.descriptionTopAr : youthForum?.descriptionTopEn) && (
                 <div
-                  className="text-xl mb-6 opacity-90 rich-content"
+                  className="text-lg sm:text-xl mb-8 opacity-90 rich-content"
                   dangerouslySetInnerHTML={{ __html: lang === 'ar' ? youthForum.descriptionTopAr : youthForum.descriptionTopEn }}
                 />
               )}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = youthForum?.buttonLink || '/youthForum.html'}
-                className="bg-white text-primary px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
+                onClick={() => window.open(YOUTH_FORUM_FORM_URL, '_blank', 'noopener,noreferrer')}
+                className="inline-flex items-center justify-center bg-white text-primary px-8 py-4 rounded-full font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
               >
                 {lang === 'ar' ? (youthForum?.buttonTextAr || str('سجل الآن وانضم إلينا', 'Register Now & Join Us')) : (youthForum?.buttonTextEn || str('سجل الآن وانضم إلينا', 'Register Now & Join Us'))}
               </motion.button>
-              {(lang === 'ar' ? youthForum?.descriptionBotAr : youthForum?.descriptionBotEn) && (
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Active Custom Form Banner */}
+      {activeForm && (
+        <section className="relative overflow-hidden bg-gradient-to-r from-primary/90 to-secondary/90 py-16 sm:py-20 mt-8">
+          <style>{`
+            .banner-description * {
+              background-color: transparent !important;
+              background: transparent !important;
+              color: white !important;
+            }
+          `}</style>
+          <div className="container-custom relative z-10">
+            <div className="text-center text-white max-w-3xl mx-auto px-4" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+              <h3 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">
+                {lang === 'ar' ? (activeForm.titleAr || activeForm.titleEn) : activeForm.titleEn}
+              </h3>
+              {(lang === 'ar' ? activeForm.descriptionAr : activeForm.descriptionEn) && (
                 <div
-                  className="text-lg mt-6 opacity-80 rich-content"
-                  dangerouslySetInnerHTML={{ __html: lang === 'ar' ? youthForum.descriptionBotAr : youthForum.descriptionBotEn }}
+                  className="text-lg sm:text-xl mb-8 opacity-90 rich-content text-white banner-description"
+                  dangerouslySetInnerHTML={{ __html: lang === 'ar' ? activeForm.descriptionAr : activeForm.descriptionEn }}
                 />
               )}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate(`/${activeForm.slug}`)}
+                className="inline-flex items-center justify-center bg-white text-primary px-8 py-4 rounded-full font-bold hover:bg-white/90 transition-colors duration-300 shadow-lg"
+              >
+                {lang === 'ar' ? 'سجل الآن وانضم إلينا' : 'Register Now & Join Us'}
+              </motion.button>
             </div>
           </div>
         </section>

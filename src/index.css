@@ -96,7 +96,6 @@
     
     html {
         scroll-behavior: smooth;
-        direction: rtl;
     }
     
     body {
@@ -147,6 +146,15 @@
 .rich-content p { margin: .3em 0; }
 
 @layer utilities {
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
     .animate-float {
         animation: float 6s ease-in-out infinite;
     }

@@ -77,6 +77,24 @@ const PhoneInput = ({ value, onChange, placeholder = 'XXXX XXXX', label, require
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // sync outside changes (like form reset) to local state
+  useEffect(() => {
+    if (!value) {
+      setNumber('');
+      setDialCode('+965');
+    } else {
+      const parts = value.split(' ');
+      if (parts.length >= 2) {
+        const d = parts[0];
+        const n = parts.slice(1).join(' ');
+        if (d !== dialCode) setDialCode(d);
+        if (n !== number) setNumber(n);
+      } else {
+        if (value !== number) setNumber(value);
+      }
+    }
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const filtered = COUNTRIES.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.dial.includes(search) ||

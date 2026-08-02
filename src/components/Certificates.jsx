@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Award, FileText, Download, Eye, X, ZoomIn } from 'lucide-react';
@@ -9,11 +9,19 @@ export const Certificates = () => {
   const { lang, str } = useLanguage();
   const [certificates, setCertificates] = useState([]);
   const [preview, setPreview] = useState(null);
+  const [activeId, setActiveId] = useState(null);
+  const mainRowRef = useRef(null);
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
 
   useEffect(() => {
     publicApi.getCertificates()
-      .then(res => setCertificates(res.data.data || []))
+      .then((res) => {
+        const data = (res.data.data || []).map((cert, index) => ({
+          ...cert,
+          clientKey: `${cert._id || cert.fileUrl || 'cert'}-${index}`,
+        }));
+        setCertificates(data);
+      })
       .catch(() => setCertificates([]));
   }, []);
 
@@ -22,6 +30,13 @@ export const Certificates = () => {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  useEffect(() => {
+    if (!certificates.length) return;
+    if (!activeId || !certificates.some((cert) => cert.clientKey === activeId)) {
+      setActiveId(certificates[0].clientKey);
+    }
+  }, [certificates, activeId]);
 
   if (certificates.length === 0) return null;
 
@@ -32,6 +47,27 @@ export const Certificates = () => {
   const itemVariants = {
     hidden: { opacity: 0, y: 24 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  const getTitle = (cert) => (lang === 'ar' ? cert.titleAr || cert.titleEn : cert.titleEn || cert.titleAr);
+
+  const activeCertificate = certificates.find((cert) => cert.clientKey === activeId) || certificates[0];
+  const mainRowCertificates = activeCertificate
+    ? [
+        activeCertificate,
+        ...certificates
+          .filter((cert) => cert.clientKey !== activeCertificate.clientKey)
+          .slice(0, 3),
+      ]
+    : [];
+  const mainRowIds = new Set(mainRowCertificates.map((cert) => cert.clientKey));
+  const thumbnailCertificates = certificates.filter((cert) => !mainRowIds.has(cert.clientKey));
+
+  const selectCertificateFromThumbnail = (id) => {
+    setActiveId(id);
+    if (mainRowRef.current) {
+      mainRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   };
 
   return (
@@ -52,14 +88,14 @@ export const Certificates = () => {
               </p>
             </motion.div>
 
-            {/* Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {certificates.map((cert) => {
-                const title = lang === 'ar' ? cert.titleAr || cert.titleEn : cert.titleEn || cert.titleAr;
+            {/* Main Row */}
+            <div ref={mainRowRef} className="mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+              {mainRowCertificates.map((cert) => {
+                const title = getTitle(cert);
                 return (
-                  <motion.div key={cert._id} variants={itemVariants} whileHover={{ y: -4 }} transition={{ duration: 0.25 }}>
+                  <motion.div key={cert.clientKey} layout initial={false} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
                     <div className="group bg-white border-2 border-gray-100 hover:border-cyan-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
-                      {/* Thumbnail */}
                       <div
                         className="relative h-48 bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center overflow-hidden cursor-pointer"
                         onClick={() => setPreview(cert)}
@@ -87,7 +123,6 @@ export const Certificates = () => {
                         )}
                       </div>
 
-                      {/* Footer */}
                       {(title || cert.fileType === 'pdf') && (
                         <div className="px-4 py-3 flex items-center justify-between gap-2 border-t border-gray-100">
                           {title && (
@@ -111,7 +146,45 @@ export const Certificates = () => {
                   </motion.div>
                 );
               })}
+              </div>
             </div>
+
+            {/* Remaining as horizontal thumbnails */}
+            {thumbnailCertificates.length > 0 && (
+              <motion.div initial={false}>
+                <div className={`mb-3 text-sm font-semibold text-cyan-600 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                  {str('المزيد (اسحب أفقياً)', 'More (scroll horizontally)')}
+                </div>
+                <div className="overflow-x-auto no-scrollbar pb-2">
+                  <div className="flex gap-3 min-w-max">
+                    {thumbnailCertificates.map((cert) => {
+                      const title = getTitle(cert);
+                      return (
+                        <motion.button
+                          key={cert.clientKey}
+                          layout
+                          type="button"
+                          onClick={() => selectCertificateFromThumbnail(cert.clientKey)}
+                          className="w-32 flex-shrink-0 rounded-xl border border-cyan-100 bg-white p-2 hover:border-cyan-300 hover:shadow-sm transition-all"
+                          title={title || 'Certificate'}
+                        >
+                          <div className="w-full h-20 rounded-lg bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center overflow-hidden">
+                            {cert.fileType === 'image' ? (
+                              <img src={cert.fileUrl} alt={title} className="w-full h-full object-contain p-1.5" />
+                            ) : (
+                              <FileText className="w-7 h-7 text-red-500" />
+                            )}
+                          </div>
+                          <p className={`mt-2 text-xs text-gray-600 truncate ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
+                            {title || 'PDF'}
+                          </p>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </section>

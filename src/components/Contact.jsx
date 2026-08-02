@@ -81,7 +81,7 @@ export const Contact = () => {
                     {contactInfo.map((info, index) => {
                       const Icon = info.icon;
                       const content = (
-                        <div className={`flex items-start gap-4 p-4 rounded-2xl hover:bg-gradient-to-r hover:from-cyan-100 hover:to-blue-100 transition-all duration-300 border-2 border-transparent hover:border-cyan-300 ${lang === 'ar' ? 'flex-row-reverse' : ''}`}>
+                        <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-gradient-to-r hover:from-cyan-100 hover:to-blue-100 transition-all duration-300 border-2 border-transparent hover:border-cyan-300">
                           <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary via-secondary to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl">
                             <Icon className="h-6 w-6 text-white" />
                           </div>
@@ -113,13 +113,13 @@ export const Contact = () => {
                   </h3>
                   <form onSubmit={handleSend} className="space-y-4">
                     {/* Name row */}
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <TF label={str('الاسم الأول', 'First Name') + ' *'} value={form.firstName} onChange={f('firstName')} lang={lang} />
                       <TF label={str('الاسم الأوسط', 'Middle Name')} value={form.middleName} onChange={f('middleName')} lang={lang} />
                       <TF label={str('اسم العائلة', 'Last Name')} value={form.lastName} onChange={f('lastName')} lang={lang} />
                     </div>
                     {/* Professional */}
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <TF label={str('المسمى الوظيفي', 'Designation')} value={form.designation} onChange={f('designation')} lang={lang} />
                       <TF label={str('الشركة / الجهة', 'Company')} value={form.company} onChange={f('company')} lang={lang} />
                     </div>

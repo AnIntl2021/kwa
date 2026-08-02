@@ -70,7 +70,6 @@ const AdminLogin = () => {
                   onChange={e => setFormData({ ...formData, password: e.target.value })}
                   required
                   className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
-                  placeholder="••••••••"
                 />
                 <button
                   type="button"

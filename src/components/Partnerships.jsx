@@ -59,9 +59,11 @@ export const Partnerships = () => {
   const itemVariants = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } } };
 
   const whatsapp = config?.social?.whatsapp;
+  const hasPartners = partners.length > 0;
 
   return (
     <>
+      {hasPartners && (
       <section id="partnerships" className="section-padding relative overflow-hidden bg-blue-50" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-secondary/10 to-transparent rounded-full blur-3xl" />
         <div className="container-custom relative z-10">
@@ -118,6 +120,7 @@ export const Partnerships = () => {
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* Newsletter */}
       <section className="w-full bg-white py-12 border-t border-b border-gray-100" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
@@ -131,8 +134,10 @@ export const Partnerships = () => {
               <form className="relative flex items-center group" onSubmit={handleNewsletter}>
                 <input type="email" value={nlEmail} onChange={e => setNlEmail(e.target.value)}
                   placeholder={str('بريدك الإلكتروني', 'Your email address')}
-                  className="w-full h-14 pr-6 pl-32 rounded-2xl border-2 border-slate-200 focus:border-cyan-500 focus:ring-0 transition-all text-right outline-none bg-white" />
-                <button type="submit" disabled={nlSending} className="absolute left-2 bg-cyan-500 hover:bg-cyan-600 disabled:opacity-60 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors">
+                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                  className={`w-full h-14 rounded-2xl border-2 border-slate-200 focus:border-cyan-500 focus:ring-0 transition-all outline-none bg-white ${lang === 'ar' ? 'pr-6 pl-32 text-right' : 'pl-6 pr-32 text-left'}`} />
+                <button type="submit" disabled={nlSending} 
+                  className={`absolute bg-cyan-500 hover:bg-cyan-600 disabled:opacity-60 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors ${lang === 'ar' ? 'left-2' : 'right-2'}`}>
                   <Send size={18} />
                 </button>
               </form>

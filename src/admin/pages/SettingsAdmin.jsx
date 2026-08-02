@@ -160,7 +160,6 @@ const SettingsAdmin = () => {
                     value={pwForm[key]}
                     onChange={e => setPwForm(p => ({ ...p, [key]: e.target.value }))}
                     required
-                    placeholder="••••••••"
                     className="w-full px-4 py-2.5 pr-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm"
                   />
                   <button type="button" onClick={toggle} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">

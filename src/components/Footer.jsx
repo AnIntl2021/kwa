@@ -83,8 +83,14 @@ export const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <div className="flex flex-col items-center text-center  gap-3">
-              <img src="https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/bo5n5bu5_kwa%20logo.png" alt="KWA" className="h-24 w-24 object-contain  rounded-full p-1" />
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="h-20 w-20 flex items-center justify-center flex-shrink-0">
+                <img
+                  src="https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/bo5n5bu5_kwa%20logo.png"
+                  alt="KWA"
+                  className="h-full w-full object-contain scale-[1.12] origin-center"
+                />
+              </div>
               <div>
                 <h3 className="text-xl font-bold">{str('جمعية المياه الكويتية', 'Kuwait Water Association')}</h3>
                 <p className="text-sm text-white/80">{str('Kuwait Water Association', 'جمعية المياه الكويتية')}</p>
