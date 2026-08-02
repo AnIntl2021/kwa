@@ -6,6 +6,33 @@ import { useLanguage } from '../context/LanguageContext';
 import { publicFormApi } from '../utils/api';
 import { CheckCircle, AlertCircle, Paperclip, X } from 'lucide-react';
 import axios from 'axios';
+import PhoneInput from '../components/ui/PhoneInput';
+
+const countries = [
+  { code: 'KW', en: 'Kuwait', ar: 'الكويت' },
+  { code: 'SA', en: 'Saudi Arabia', ar: 'المملكة العربية السعودية' },
+  { code: 'AE', en: 'United Arab Emirates', ar: 'الإمارات العربية المتحدة' },
+  { code: 'QA', en: 'Qatar', ar: 'قطر' },
+  { code: 'BH', en: 'Bahrain', ar: 'البحرين' },
+  { code: 'OM', en: 'Oman', ar: 'عمان' },
+  { code: 'EG', en: 'Egypt', ar: 'مصر' },
+  { code: 'JO', en: 'Jordan', ar: 'الأردن' },
+  { code: 'LB', en: 'Lebanon', ar: 'لبنان' },
+  { code: 'SY', en: 'Syria', ar: 'سوريا' },
+  { code: 'IQ', en: 'Iraq', ar: 'العراق' },
+  { code: 'PS', en: 'Palestine', ar: 'فلسطين' },
+  { code: 'YE', en: 'Yemen', ar: 'اليمن' },
+  { code: 'SD', en: 'Sudan', ar: 'السودان' },
+  { code: 'LY', en: 'Libya', ar: 'ليبيا' },
+  { code: 'TN', en: 'Tunisia', ar: 'تونس' },
+  { code: 'DZ', en: 'Algeria', ar: 'الجزائر' },
+  { code: 'MA', en: 'Morocco', ar: 'المغرب' },
+  { code: 'MR', en: 'Mauritania', ar: 'موريتانيا' },
+  { code: 'SO', en: 'Somalia', ar: 'الصومال' },
+  { code: 'DJ', en: 'Djibouti', ar: 'جيبوتي' },
+  { code: 'KM', en: 'Comoros', ar: 'جزر القمر' },
+  { code: 'OTHER', en: 'Other', ar: 'أخرى' }
+];
 
 const CustomFormPage = () => {
   const { slug } = useParams();
@@ -21,6 +48,12 @@ const CustomFormPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  
+  // Split name state for Arabic and English names
+  const [names, setNames] = useState({
+    firstAr: '', middleAr: '', lastAr: '',
+    firstEn: '', middleEn: '', lastEn: ''
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -29,6 +62,10 @@ const CustomFormPage = () => {
     setValues({});
     setFileValues({});
     setUploadProgress({});
+    setNames({
+      firstAr: '', middleAr: '', lastAr: '',
+      firstEn: '', middleEn: '', lastEn: ''
+    });
     publicFormApi.getForm(slug)
       .then(res => { setForm(res.data.data); setLoading(false); })
       .catch(() => { setNotFound(true); setLoading(false); });
@@ -38,11 +75,27 @@ const CustomFormPage = () => {
     e.preventDefault();
     setError('');
 
+    // Check custom validation for split names
+    const hasArabicName = !!(names.firstAr.trim() && names.lastAr.trim());
+    const hasEnglishName = !!(names.firstEn.trim() && names.lastEn.trim());
+
+    if (!hasArabicName && !hasEnglishName) {
+      setError(isAr 
+        ? 'يرجى إدخال الاسم بالكامل باللغة العربية أو باللغة الإنجليزية' 
+        : 'Please enter your full name in either Arabic or English.');
+      return;
+    }
+
     const missing = form.fields.filter(f => {
       if (!f.required) return false;
+      // Skip the database name fields from standard check since we validate them above
+      if (f.id === 'f_1777869154567' || f.id === 'f_1777870650803') {
+        return false;
+      }
       if (f.type === 'file') return !fileValues[f.id] && !values[f.id];
       return !values[f.id];
     });
+
     if (missing.length > 0) {
       setError(isAr ? 'يرجى ملء جميع الحقول المطلوبة' : 'Please fill in all required fields.');
       return;
@@ -51,6 +104,14 @@ const CustomFormPage = () => {
     setSubmitting(true);
     try {
       const finalValues = { ...values };
+
+      // Set combined name fields
+      finalValues['f_1777869154567'] = hasArabicName
+        ? [names.firstAr.trim(), names.middleAr.trim(), names.lastAr.trim()].filter(Boolean).join(' ')
+        : '';
+      finalValues['f_1777870650803'] = hasEnglishName
+        ? [names.firstEn.trim(), names.middleEn.trim(), names.lastEn.trim()].filter(Boolean).join(' ')
+        : '';
 
       // Upload any pending file fields first
       const fileFields = form.fields.filter(f => f.type === 'file' && fileValues[f.id]);
@@ -84,6 +145,18 @@ const CustomFormPage = () => {
     const ph = isAr ? field.placeholderAr : field.placeholderEn;
     const val = values[field.id] || '';
     const base = 'w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors';
+
+    // Override text fields for Nationality and Country of Residence as select dropdowns
+    if (field.id === 'f_1777870749626' || field.id === 'f_1777870769147') {
+      return (
+        <select value={val} onChange={e => set(field.id, e.target.value)} className={base}>
+          <option value="">{isAr ? 'اختر...' : 'Select...'}</option>
+          {countries.map((c, i) => (
+            <option key={i} value={c.en}>{isAr ? c.ar : c.en}</option>
+          ))}
+        </select>
+      );
+    }
 
     switch (field.type) {
       case 'file':
@@ -123,9 +196,16 @@ const CustomFormPage = () => {
         return <input type="number" value={val} onChange={e => set(field.id, e.target.value)} placeholder={ph} className={base} />;
       case 'email':
         return <input type="email" value={val} onChange={e => set(field.id, e.target.value)} placeholder={ph} dir="ltr" className={base} />;
+      case 'phone':
+        return (
+          <PhoneInput
+            value={val}
+            onChange={newVal => set(field.id, newVal)}
+          />
+        );
       default:
         return (
-          <input type={field.type === 'phone' ? 'tel' : 'text'} value={val}
+          <input type="text" value={val}
             onChange={e => set(field.id, e.target.value)} placeholder={ph}
             dir={isAr ? 'rtl' : 'ltr'} className={base} />
         );
@@ -180,15 +260,98 @@ const CustomFormPage = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  {form.fields.map(field => (
-                    <div key={field.id}>
-                      <label className={`block text-sm font-medium text-gray-700 mb-1.5 ${isAr ? 'text-right' : ''}`}>
-                        {isAr ? field.labelAr || field.labelEn : field.labelEn}
-                        {field.required && <span className="text-red-500 ms-1">*</span>}
-                      </label>
-                      {renderField(field)}
-                    </div>
-                  ))}
+                  {form.fields.map(field => {
+                    // Check if this is the Arabic full name field
+                    if (field.id === 'f_1777869154567') {
+                      return (
+                        <div key={field.id} className="space-y-3">
+                          <p className={`text-sm font-semibold text-gray-700 ${isAr ? 'text-right' : ''}`}>
+                            {isAr ? 'الاسم بالكامل (باللغة العربية)' : 'Full name in Arabic'} <span className="text-red-500">*</span>
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" dir={isAr ? 'rtl' : 'ltr'}>
+                            <div>
+                              <input
+                                type="text"
+                                value={names.firstAr}
+                                onChange={e => setNames(p => ({ ...p, firstAr: e.target.value }))}
+                                placeholder={isAr ? 'الاسم الأول' : 'First Name'}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                            <div>
+                              <input
+                                type="text"
+                                value={names.middleAr}
+                                onChange={e => setNames(p => ({ ...p, middleAr: e.target.value }))}
+                                placeholder={isAr ? 'الاسم الأوسط' : 'Middle Name'}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                            <div>
+                              <input
+                                type="text"
+                                value={names.lastAr}
+                                onChange={e => setNames(p => ({ ...p, lastAr: e.target.value }))}
+                                placeholder={isAr ? 'اسم العائلة' : 'Last Name'}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Check if this is the English full name field
+                    if (field.id === 'f_1777870650803') {
+                      return (
+                        <div key={field.id} className="space-y-3">
+                          <p className={`text-sm font-semibold text-gray-700 ${isAr ? 'text-right' : ''}`}>
+                            {isAr ? 'الاسم بالكامل (باللغة الإنجليزية)' : 'Full name in English'} <span className="text-red-500">*</span>
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" dir="ltr">
+                            <div>
+                              <input
+                                type="text"
+                                value={names.firstEn}
+                                onChange={e => setNames(p => ({ ...p, firstEn: e.target.value }))}
+                                placeholder="First Name"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                            <div>
+                              <input
+                                type="text"
+                                value={names.middleEn}
+                                onChange={e => setNames(p => ({ ...p, middleEn: e.target.value }))}
+                                placeholder="Middle Name"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                            <div>
+                              <input
+                                type="text"
+                                value={names.lastEn}
+                                onChange={e => setNames(p => ({ ...p, lastEn: e.target.value }))}
+                                placeholder="Last Name"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Normal fields
+                    return (
+                      <div key={field.id}>
+                        <label className={`block text-sm font-medium text-gray-700 mb-1.5 ${isAr ? 'text-right' : ''}`}>
+                          {isAr ? field.labelAr || field.labelEn : field.labelEn}
+                          {field.required && <span className="text-red-500 ms-1">*</span>}
+                        </label>
+                        {renderField(field)}
+                      </div>
+                    );
+                  })}
 
                   {(isAr ? form.descriptionBotAr : form.descriptionBotEn) && (
                     <div
