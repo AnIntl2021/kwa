@@ -7,32 +7,7 @@ import { publicFormApi } from '../utils/api';
 import { CheckCircle, AlertCircle, Paperclip, X } from 'lucide-react';
 import axios from 'axios';
 import PhoneInput from '../components/ui/PhoneInput';
-
-const countries = [
-  { code: 'KW', en: 'Kuwait', ar: 'الكويت' },
-  { code: 'SA', en: 'Saudi Arabia', ar: 'المملكة العربية السعودية' },
-  { code: 'AE', en: 'United Arab Emirates', ar: 'الإمارات العربية المتحدة' },
-  { code: 'QA', en: 'Qatar', ar: 'قطر' },
-  { code: 'BH', en: 'Bahrain', ar: 'البحرين' },
-  { code: 'OM', en: 'Oman', ar: 'عمان' },
-  { code: 'EG', en: 'Egypt', ar: 'مصر' },
-  { code: 'JO', en: 'Jordan', ar: 'الأردن' },
-  { code: 'LB', en: 'Lebanon', ar: 'لبنان' },
-  { code: 'SY', en: 'Syria', ar: 'سوريا' },
-  { code: 'IQ', en: 'Iraq', ar: 'العراق' },
-  { code: 'PS', en: 'Palestine', ar: 'فلسطين' },
-  { code: 'YE', en: 'Yemen', ar: 'اليمن' },
-  { code: 'SD', en: 'Sudan', ar: 'السودان' },
-  { code: 'LY', en: 'Libya', ar: 'ليبيا' },
-  { code: 'TN', en: 'Tunisia', ar: 'تونس' },
-  { code: 'DZ', en: 'Algeria', ar: 'الجزائر' },
-  { code: 'MA', en: 'Morocco', ar: 'المغرب' },
-  { code: 'MR', en: 'Mauritania', ar: 'موريتانيا' },
-  { code: 'SO', en: 'Somalia', ar: 'الصومال' },
-  { code: 'DJ', en: 'Djibouti', ar: 'جيبوتي' },
-  { code: 'KM', en: 'Comoros', ar: 'جزر القمر' },
-  { code: 'OTHER', en: 'Other', ar: 'أخرى' }
-];
+import { countries } from '../utils/countries';
 
 const CustomFormPage = () => {
   const { slug } = useParams();
@@ -144,15 +119,29 @@ const CustomFormPage = () => {
   const renderField = (field) => {
     const ph = isAr ? field.placeholderAr : field.placeholderEn;
     const val = values[field.id] || '';
-    const base = 'w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors';
+    const base = 'w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900';
 
     // Override text fields for Nationality and Country of Residence as select dropdowns
     if (field.id === 'f_1777870749626' || field.id === 'f_1777870769147') {
       return (
-        <select value={val} onChange={e => set(field.id, e.target.value)} className={base}>
-          <option value="">{isAr ? 'اختر...' : 'Select...'}</option>
+        <select 
+          value={val} 
+          onChange={e => set(field.id, e.target.value)} 
+          className={base}
+          style={{ textAlign: isAr ? 'right' : 'left' }}
+        >
+          <option value="" style={{ textAlign: isAr ? 'right' : 'left' }}>
+            {isAr ? 'اختر الدولة...' : 'Select Country...'}
+          </option>
           {countries.map((c, i) => (
-            <option key={i} value={c.en}>{isAr ? c.ar : c.en}</option>
+            <option 
+              key={i} 
+              value={c.en} 
+              style={{ textAlign: isAr ? 'right' : 'left' }}
+              className="py-2 text-gray-900 bg-white"
+            >
+              {isAr ? c.ar : c.en}
+            </option>
           ))}
         </select>
       );
@@ -169,11 +158,25 @@ const CustomFormPage = () => {
         );
       case 'select':
         return (
-          <select value={val} onChange={e => set(field.id, e.target.value)}
-            dir={isAr ? 'rtl' : 'ltr'} className={base}>
-            <option value="">{isAr ? 'اختر...' : 'Select...'}</option>
+          <select 
+            value={val} 
+            onChange={e => set(field.id, e.target.value)}
+            dir={isAr ? 'rtl' : 'ltr'} 
+            className={base}
+            style={{ textAlign: isAr ? 'right' : 'left' }}
+          >
+            <option value="" style={{ textAlign: isAr ? 'right' : 'left' }}>
+              {isAr ? 'اختر...' : 'Select...'}
+            </option>
             {(field.options || []).map((opt, i) => (
-              <option key={i} value={opt.value}>{isAr ? opt.labelAr : opt.labelEn}</option>
+              <option 
+                key={i} 
+                value={opt.value}
+                style={{ textAlign: isAr ? 'right' : 'left' }}
+                className="py-2 text-gray-900 bg-white"
+              >
+                {isAr ? opt.labelAr : opt.labelEn}
+              </option>
             ))}
           </select>
         );
@@ -191,9 +194,9 @@ const CustomFormPage = () => {
           </div>
         );
       case 'date':
-        return <input type="date" value={val} onChange={e => set(field.id, e.target.value)} className={base} />;
+        return <input type="date" value={val} onChange={e => set(field.id, e.target.value)} className={base} style={{ textAlign: isAr ? 'right' : 'left' }} />;
       case 'number':
-        return <input type="number" value={val} onChange={e => set(field.id, e.target.value)} placeholder={ph} className={base} />;
+        return <input type="number" value={val} onChange={e => set(field.id, e.target.value)} placeholder={ph} className={base} style={{ textAlign: isAr ? 'right' : 'left' }} />;
       case 'email':
         return <input type="email" value={val} onChange={e => set(field.id, e.target.value)} placeholder={ph} dir="ltr" className={base} />;
       case 'phone':
@@ -207,7 +210,7 @@ const CustomFormPage = () => {
         return (
           <input type="text" value={val}
             onChange={e => set(field.id, e.target.value)} placeholder={ph}
-            dir={isAr ? 'rtl' : 'ltr'} className={base} />
+            dir={isAr ? 'rtl' : 'ltr'} className={base} style={{ textAlign: isAr ? 'right' : 'left' }} />
         );
     }
   };
@@ -275,7 +278,7 @@ const CustomFormPage = () => {
                                 value={names.firstAr}
                                 onChange={e => setNames(p => ({ ...p, firstAr: e.target.value }))}
                                 placeholder={isAr ? 'الاسم الأول' : 'First Name'}
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                             <div>
@@ -284,7 +287,7 @@ const CustomFormPage = () => {
                                 value={names.middleAr}
                                 onChange={e => setNames(p => ({ ...p, middleAr: e.target.value }))}
                                 placeholder={isAr ? 'الاسم الأوسط' : 'Middle Name'}
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                             <div>
@@ -293,7 +296,7 @@ const CustomFormPage = () => {
                                 value={names.lastAr}
                                 onChange={e => setNames(p => ({ ...p, lastAr: e.target.value }))}
                                 placeholder={isAr ? 'اسم العائلة' : 'Last Name'}
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                           </div>
@@ -315,7 +318,7 @@ const CustomFormPage = () => {
                                 value={names.firstEn}
                                 onChange={e => setNames(p => ({ ...p, firstEn: e.target.value }))}
                                 placeholder="First Name"
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                             <div>
@@ -324,7 +327,7 @@ const CustomFormPage = () => {
                                 value={names.middleEn}
                                 onChange={e => setNames(p => ({ ...p, middleEn: e.target.value }))}
                                 placeholder="Middle Name"
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                             <div>
@@ -333,7 +336,7 @@ const CustomFormPage = () => {
                                 value={names.lastEn}
                                 onChange={e => setNames(p => ({ ...p, lastEn: e.target.value }))}
                                 placeholder="Last Name"
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors"
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-colors text-start bg-white text-gray-900"
                               />
                             </div>
                           </div>
