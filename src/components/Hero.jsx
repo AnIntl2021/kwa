@@ -44,13 +44,13 @@ export const Hero = () => {
         <img src="https://customer-assets.emergentagent.com/job_b4947f91-cc89-422e-b6c2-759af70d53ff/artifacts/xapw5hpf_%D8%A7%D8%A8%D8%B1%D8%A7%D8%AC%20%D8%A7%D9%84%D9%83%D9%88%D9%8A%D8%AA.png" alt="" className="w-full h-full object-contain" />
       </div>
 
-      <div className="container-custom relative z-10 py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className={lang === 'ar' ? 'text-right' : 'text-left'}>
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }} className="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight">
+      <div className="container-custom relative z-10 py-28 md:py-32">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <motion.div initial={{ opacity: 0, x: 0 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className={lang === 'ar' ? 'text-right' : 'text-left'}>
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }} className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-cyan-500 via-cyan-500 to-cyan-500 bg-clip-text text-transparent">{title}</span>
             </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }} className="text-xl text-gray-700 mb-8 leading-relaxed font-medium">
+            <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.8 }} className="text-base sm:text-xl text-gray-700 mb-8 leading-relaxed font-medium">
               {subtitle}
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.8 }} className="flex flex-wrap gap-4 mb-12">
@@ -61,7 +61,7 @@ export const Hero = () => {
                 {str('تواصل معنا', 'Contact Us')}
               </Button>
             </motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.8 }} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.8 }} className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {stats.map((stat, i) => {
                 const IconComponent = iconMap[stat.icon] || Droplets;
                 const isGreen = i === 1;
