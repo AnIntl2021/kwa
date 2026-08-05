@@ -18,7 +18,7 @@ const iconPool = [Users, GraduationCap, Laptop, Globe];
 export const Training = () => {
   const { lang, str } = useLanguage();
   const [trainings, setTrainings] = useState([]);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTraining, setSelectedTraining] = useState('');
   const emptyForm = { firstName: '', middleName: '', lastName: '', designation: '', company: '', email: '', phone: '', message: '' };

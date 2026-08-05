@@ -11,7 +11,7 @@ export const Certificates = () => {
   const [preview, setPreview] = useState(null);
   const [activeId, setActiveId] = useState(null);
   const mainRowRef = useRef(null);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.05 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
 
   useEffect(() => {
     publicApi.getCertificates()

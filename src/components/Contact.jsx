@@ -10,7 +10,7 @@ import { publicApi } from '../utils/api';
 export const Contact = () => {
   const { lang, str } = useLanguage();
   const [config, setConfig] = useState(null);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
   const emptyForm = { firstName: '', middleName: '', lastName: '', designation: '', company: '', email: '', phone: '', landline: '', message: '' };
   const [form, setForm] = useState(emptyForm);
   const [sending, setSending] = useState(false);

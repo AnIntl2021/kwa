@@ -17,7 +17,7 @@ export const Partnerships = () => {
   const { lang, str } = useLanguage();
   const [partners, setPartners] = useState([]);
   const [config, setConfig] = useState(null);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
   const [nlEmail, setNlEmail] = useState('');
   const [nlMsg, setNlMsg] = useState('');
   const [nlSending, setNlSending] = useState(false);

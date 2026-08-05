@@ -9,7 +9,7 @@ import { publicApi } from '../utils/api';
 export const Team = () => {
   const { lang, t, str } = useLanguage();
   const [team, setTeam] = useState([]);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
 
   useEffect(() => {
     publicApi.getTeam()

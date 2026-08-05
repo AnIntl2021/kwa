@@ -9,7 +9,7 @@ export const Awards = () => {
   const { lang, str } = useLanguage();
   const [awards, setAwards] = useState([]);
   const [memberships, setMemberships] = useState([]);
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
+  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0, rootMargin: '0px 0px 150px 0px' });
 
   useEffect(() => {
     Promise.all([publicApi.getAwards(), publicApi.getMemberships()])
