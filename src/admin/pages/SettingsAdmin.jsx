@@ -139,6 +139,36 @@ const SettingsAdmin = () => {
         </section>
       </div>
 
+      {/* Youth Forum CTA Settings */}
+      <div className="mt-8">
+        <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="font-semibold text-gray-700">Youth Forum CTA Banner</h2>
+              <p className="text-xs text-gray-400">Shown on the homepage</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" checked={config.youthForum?.isVisible ?? true} onChange={e => update('youthForum.isVisible', e.target.checked)} />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-cyan-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+            </label>
+          </div>
+          
+          {config.youthForum?.isVisible && (
+            <div className="space-y-4 pt-4 border-t border-gray-100">
+              <F label="Jotform Registration Link" value={config.youthForum?.buttonLink} onChange={v => update('youthForum.buttonLink', v)} />
+              <div className="grid grid-cols-2 gap-4">
+                <F label="Title (English)" value={config.youthForum?.titleEn} onChange={v => update('youthForum.titleEn', v)} />
+                <F label="Title (Arabic)" value={config.youthForum?.titleAr} onChange={v => update('youthForum.titleAr', v)} dir="rtl" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <F label="Button Text (English)" value={config.youthForum?.buttonTextEn} onChange={v => update('youthForum.buttonTextEn', v)} />
+                <F label="Button Text (Arabic)" value={config.youthForum?.buttonTextAr} onChange={v => update('youthForum.buttonTextAr', v)} dir="rtl" />
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
+
       {/* ── Change Password ── */}
       <div className="mt-8 max-w-2xl">
         <div className="flex items-center gap-2 mb-4">

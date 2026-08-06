@@ -19,6 +19,7 @@ import Gallery from "./components/Gallery";
 import { Certificates } from "./components/Certificates";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { YouthForumCTA } from "./components/YouthForumCTA";
 
 // Pages
 import EventsPage from "./pages/EventsPage";
@@ -60,6 +61,7 @@ const Home = () => (
       <Partnerships />
       <Certificates />
       <Gallery />
+      <YouthForumCTA />
       <Contact />
     </main>
     <Footer />
